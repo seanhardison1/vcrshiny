@@ -1,0 +1,24 @@
+Package: vcrshiny
+Title: Visualizing Virginia Coast Reserve Data in Near Real-time
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Sean",
+           family = "Hardison",
+           role = c("aut", "cre"),
+           email = "sh5rs@virginia.edu")
+Description: The vcrshiny app is designed to query and visualize meteorological and tidal data from the Anheuser-Busch Coastal Research Center on the Eastern Shore of Virginia.
+License: MIT + file LICENSE
+Imports: 
+    config,
+    golem,
+    shiny,
+    processx,
+    attempt,
+    DT,
+    glue,
+    htmltools
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.0.2
+Suggests: 
+    testthat
