@@ -10,9 +10,21 @@
 mod_ts_vis_ui <- function(id){
   ns <- NS(id)
   tagList(
-    selectInput(ns("dataset"), choices = list("Tides" = "tides",
-                                              "Meterology" = "meteorology"),
-                label = "Data")
+    selectInput(ns("dataset"), 
+                choices = list("Meterology" = "meteorology"),
+                label = "Data"),
+    selectInput(ns("variable"),
+                choices = list("PPT" = "ppt",
+                               "Avg. Temperature" = "avg.t",
+                               "PAR" = "par"),
+                selected = "PPT",
+                label = "Variable name"),
+    selectInput(ns("station"),
+                choices = list("HOG2" = "HOG2",
+                               "OYSM" = "OYSM",
+                               "PHCK2" = "PHCK2"),
+                selected = "HOG2",
+                label = "Station")
   )
 }
     
@@ -23,9 +35,12 @@ mod_ts_vis_server <- function(input, output, session){
   ns <- session$ns
   
   dataframe <- reactive({
-    eval(parse(text = paste0("vcrshiny::",input$dataset)))
+    df <- eval(parse(text = paste0("vcrshiny::",input$dataset))) 
+    df %<>%
+      filter(station == input$station) %>% 
+      dplyr::select(datetime, input$variable)
   })
-
+  
   return(dataframe)
 }
 

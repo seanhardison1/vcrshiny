@@ -1,12 +1,13 @@
-library(dygraphs)
 library(tidyverse)
 library(lubridate)
 library(tydygraphs)
 library(tsibble)
 
-t <- vcrshiny::meteorology %>% 
-  filter(station == "BRNV", !is.na(datetime)) %>% 
-  dplyr::select(datetime, avg.t) %>% 
-  distinct() 
+t <- "meteorology"
+df <- eval(parse(text = paste0("vcrshiny::",t))) 
 
-dygraph(t, avg.t)
+df %<>%
+  filter(station == "HOG2") %>% 
+  dplyr::select(datetime, avg.t)
+
+dygraph(t, "avg.t") 

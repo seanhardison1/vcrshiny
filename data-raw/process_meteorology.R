@@ -11,6 +11,7 @@
 library(RCurl)
 library(tidyverse)
 library(lubridate)
+library(tsibble)
 
 infile1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-vcr/25/40/32a020479d23312012444a5b4ff81658" 
 infile1 <- sub("^https","http",infile1)
@@ -45,7 +46,13 @@ meteorology <- dt1 %>%
                                 '%H:%M'), '%I:%M %p')) %>% 
   mutate(datetime = as.POSIXct(paste(.$datetime, TIME2), 
                                format="%Y-%m-%d %I:%M %p")) %>% 
-  dplyr::select(-TIME, -TIME2)
+  dplyr::select(-TIME, -TIME2) %>% 
+  dplyr::filter(!is.na(datetime)) %>% 
+  dplyr::rename(station = STATION) %>% 
+  group_by(station) %>% 
+  filter(!duplicated(datetime), year(datetime) > 2017) %>% 
+  tsibble::as_tsibble(., key = station) %>%
+  fill_gaps(.,.full = TRUE)
 
 names(meteorology) <- str_to_lower(names(meteorology))
   
