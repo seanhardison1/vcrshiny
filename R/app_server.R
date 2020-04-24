@@ -1,15 +1,11 @@
-#' The application server-side
-#' 
-#' @param input,output,session Internal parameters for {shiny}. 
-#'     DO NOT REMOVE.
-#' @import shiny
-#' @noRd
-app_server <- function( input, output, session ) {
-  # List the first level callModules here
-  data <- callModule(mod_ts_vis_server, "ts_vis_ui_1") 
+# server logic
+app_server <- function(input, output, session) {
   
-  output$dygraph <- renderDygraph({
-    col <- names(data())[3]
-    tydygraphs::dygraph(data(), col)
-  })
+  # execute plot variable selection modules
+  plot1vars <- callModule(mod_01_var_select_server, "01_var_select_ui_1")
+  
+  # execute scatterplot module
+  res <- callModule(mod_02_ts_vis_server, 
+                    "02_ts_vis_ui_1",
+                    plot1vars = plot1vars)
 }
