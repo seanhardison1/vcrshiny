@@ -4,11 +4,11 @@
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
-#' @noRd 
+#' @export
 #'
 #' @importFrom shiny NS tagList 
 mod_02_ts_vis_ui <-function(id) {
-  ns <- shiny::NS(id)
+  ns <- NS(id)
   
   shiny::tagList(
     shiny::mainPanel(
@@ -19,14 +19,14 @@ mod_02_ts_vis_ui <-function(id) {
     
 #' 02_ts_vis Server Function
 #'
-#' @noRd 
+#' @export
 mod_02_ts_vis_server <- function(input, 
                                  output, 
                                  session, 
                                  plot1vars) {
   ns <- session$ns
   
-  plot1_obj <- reactive({
+  plot1_obj <- shiny::reactive({
     
     # Get variable names
     variable <- rlang::sym(plot1vars$variable())
@@ -48,16 +48,16 @@ mod_02_ts_vis_server <- function(input,
     }
     
     #plot data
-    p <- ggplot(data = df) +
-      geom_line(aes(x = datetime, y = get(paste(variable)),
+    p <- ggplot2::ggplot(data = df) +
+      ggplot2::geom_line(ggplot2::aes(x = datetime, y = get(paste(variable)),
                     color = station)) +
-      theme_bw() +
-      ylab(ylabel)
+      ggplot2::theme_bw() +
+      ggplot2::ylab(ylabel)
     
-    return(ggplotly(p))
+    return(plotly::ggplotly(p))
   })
   
-  output$plot1 <- renderPlotly({
+  output$plot1 <- plotly::renderPlotly({
     plot1_obj()
   })
   

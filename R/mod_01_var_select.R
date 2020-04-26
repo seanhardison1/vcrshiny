@@ -3,12 +3,12 @@
 #' @description A shiny Module.
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
-#'
-#' @noRd 
-#'
+#' 
+#' @noRd
+#' 
 #' @importFrom shiny NS tagList 
 mod_01_var_select_ui <- function(id){
-  ns <- shiny::NS(id)
+  ns <- NS(id)
   
   # define choices for X and Y variable selection
   station_choices <- list(
@@ -45,6 +45,7 @@ mod_01_var_select_ui <- function(id){
     
 #' 01_var_select Server Function
 #'
+#'
 #' @noRd 
 mod_01_var_select_server <- function(input, output, session) {
   ns <- session$ns
@@ -59,7 +60,7 @@ mod_01_var_select_server <- function(input, output, session) {
     
 ## To be copied in the UI
 # mod_01_var_select_ui("01_var_select_ui_1")
-    
+
 ## To be copied in the server
 # callModule(mod_01_var_select_server, "01_var_select_ui_1")
  
