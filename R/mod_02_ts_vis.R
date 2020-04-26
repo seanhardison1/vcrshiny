@@ -4,8 +4,7 @@
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
-#' @export
-#'
+#' @noRd
 #' @importFrom shiny NS tagList 
 mod_02_ts_vis_ui <-function(id) {
   ns <- NS(id)
@@ -19,7 +18,7 @@ mod_02_ts_vis_ui <-function(id) {
     
 #' 02_ts_vis Server Function
 #'
-#' @export
+#' @noRd
 mod_02_ts_vis_server <- function(input, 
                                  output, 
                                  session, 
@@ -49,12 +48,12 @@ mod_02_ts_vis_server <- function(input,
     
     #plot data
     p <- ggplot2::ggplot(data = df) +
-      ggplot2::geom_line(ggplot2::aes(x = datetime, y = get(paste(variable)),
+      ggplot2::geom_line(ggplot2::aes(x = datetime, y = base::get(paste(variable)),
                     color = station)) +
       ggplot2::theme_bw() +
       ggplot2::ylab(ylabel)
     
-    return(plotly::ggplotly(p))
+    plotly::ggplotly(p)
   })
   
   output$plot1 <- plotly::renderPlotly({
