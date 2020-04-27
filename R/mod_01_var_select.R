@@ -17,12 +17,18 @@ mod_01_var_select_ui <- function(id){
     "PHCK2" = "PHCK2"
   )
   variable_choices <- list(
-    `Precipitation` = "ppt",
-    `Avg. Temperature` = "avg.t",
-    `Min. Temperature` = "min.t",
-    `Avg. Relative Humidity` = "avg.rh",
-    `Min. Relative Humidity` = "min.rh",
-    `Max Relative Humidity` = "max.rh"
+    `Precipitation (ml)` = "ppt",
+    `Avg. Temperature (°C)` = "avg.t",
+    `Min. Temperature (°C)` = "min.t",
+    `Avg. Relative Humidity (%)` = "avg.rh",
+    `Min. Relative Humidity (%)` = "min.rh",
+    `Max Relative Humidity (%)` = "max.rh",
+    `Avg. Wind Speed (m/s)` = "avg.ws",
+    `Avg. Wind Angle (°)` = "avg.wang",
+    `St. Dev. of Wind Direction (°)` = "std.wang",
+    `Solar Radiation (kJ/m^2)` = "rad.sol",
+    `PAR (mmol/m^2/hr)` = "par",
+    `Soil Temperature (°C)` = "soil.t"
   )
   
   tagList(

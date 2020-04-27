@@ -32,12 +32,18 @@ mod_02_ts_vis_server <- function(input,
     
     ylabel <- switch(plot1vars$variable(),
                      "ppt" = "Precipitation (ml)",
-                     "avg.t" = "Avg. temperature (°C)",
-                     "min.t" = "Minimum temperature (°C)",
-                     "avg.rh" = "Avg. Relative Humidity",
-                     "min.rh" = "Min. Relative Humidity",
-                     "max.rh" = "Max Relative Humidity"
-    )
+                     "avg.t" = "Avg. Temperature (°C)",
+                     "min.t" = "Min. Temperature (°C)",
+                     "avg.rh" = "Avg. Relative Humidity (%)",
+                     "min.rh" = "Min. Relative Humidity (%)",
+                     "max.rh" = "Max Relative Humidity (%)",
+                     "avg.ws" = "Avg. Wind Speed (m/s)",
+                     "avg.wang" = "Avg. Wind Angle (°)",
+                     "std.wang" = "St. Dev. of Wind Direction (°)",
+                     "rad.sol" = "Solar Radiation (kJ/m^2)",
+                     "par" = "PAR (mmol/m^2/hr)",
+                     "soil.t" = "Soil Temperature (°C)"
+                     )
     
     if (!is.null(plot1vars$station())){
       df <- vcrshiny::meteorology %>% 
