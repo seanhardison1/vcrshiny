@@ -11,7 +11,7 @@ mod_02_ts_vis_ui <-function(id) {
   
   shiny::tagList(
     shiny::mainPanel(
-      plotly::plotlyOutput(ns("plot1"))
+      dygraphs::dygraphOutput(ns("plot1"))
     )
   )
 }
@@ -26,9 +26,6 @@ mod_02_ts_vis_server <- function(input,
   ns <- session$ns
   
   plot1_obj <- shiny::reactive({
-    
-    # Get variable names
-    variable <- rlang::sym(plot1vars$variable())
     
     ylabel <- switch(plot1vars$variable(),
                      "ppt" = "Precipitation (ml)",
@@ -68,19 +65,19 @@ mod_02_ts_vis_server <- function(input,
         dplyr::filter(datetime >= plot1vars$period())
     }
     
-    #plot data
-    p <- ggplot2::ggplot(data = df) +
-      ggplot2::geom_point(ggplot2::aes(x = datetime, 
-                                      y = base::get(paste(variable)),
-                                      color = station)) +
+      p <- df %>% 
+        tydygraphs::dygraph(!! rlang::sym(plot1vars$variable())) %>% 
+        
+        dygraphs::dySeries(paste(plot1vars$variable(), plot1vars$station(), sep = "_"), 
+                           label = paste(plot1vars$station(),"-", ylabel)) %>% 
+        
+        dygraphs::dyAxis("y",label = ylabel)
       
-      ggplot2::theme_bw() +
-      ggplot2::ylab(ylabel)
+    # if (plot1vars$variable() == "ppt") p <- p %>% dygraphs::dyOptions(drawPoints = TRUE)
     
-    plotly::ggplotly(p)
   })
   
-  output$plot1 <- plotly::renderPlotly({
+  output$plot1 <- dygraphs::renderDygraph({
     plot1_obj()
   })
   

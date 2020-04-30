@@ -94,7 +94,8 @@ mod_01_var_select_server <- function(input, output, session) {
 
     tibble::tibble(end = max(eval(parse(text = paste0("vcrshiny::",
                                               input$dataset)))$datetime)) %>%
-                   dplyr::mutate(start = end - months(2))
+                   dplyr::mutate(start = end - months(6),
+                                 value = end - months(2))
 
   })
   
@@ -120,7 +121,7 @@ mod_01_var_select_server <- function(input, output, session) {
       "period",
       min = time_period()$start,
       max = time_period()$end,
-      value = c(time_period()$start,
+      value = c(time_period()$value,
                 time_period()$end),
       timeFormat="%b-%Y",
       step = 7
