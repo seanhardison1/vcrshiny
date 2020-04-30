@@ -6,8 +6,8 @@
 #' @noRd
 app_ui <- function(request){
   tagList(
-    shiny::fluidPage(
-      
+    shiny::fluidPage(theme = shinythemes::shinytheme("simplex"),
+
       shiny::titlePanel("VCR Data Explorer"),
       
       shiny::fluidRow(
