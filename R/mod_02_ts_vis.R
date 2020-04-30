@@ -52,18 +52,25 @@ mod_02_ts_vis_server <- function(input,
       return()
     }
     
+    if (plot1vars$station() == "") {
+      return()
+    }
+    # browser()
     if (!is.null(plot1vars$station())){
-
       df <- eval(parse(text = paste0("vcrshiny::", plot1vars$dataset())))
       df <- df %>% 
-        dplyr::filter(station %in% plot1vars$station())
+        dplyr::filter(station %in% plot1vars$station(),
+                      datetime >= plot1vars$period()[1],
+                      datetime < plot1vars$period()[2])
     } else {
       df <- eval(parse(text = paste0("vcrshiny::", plot1vars$dataset())))
+      df <- df %>% 
+        dplyr::filter(datetime >= plot1vars$period())
     }
     
     #plot data
     p <- ggplot2::ggplot(data = df) +
-      ggplot2::geom_line(ggplot2::aes(x = datetime, 
+      ggplot2::geom_point(ggplot2::aes(x = datetime, 
                                       y = base::get(paste(variable)),
                                       color = station)) +
       

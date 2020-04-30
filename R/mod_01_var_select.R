@@ -29,6 +29,16 @@ mod_01_var_select_ui <- function(id){
       ns("variable"),
       "Select variable",
       choices = ""
+    ),
+    
+    shiny::sliderInput(
+      ns("period"),
+      "Select time period",
+      min = as.Date("2019-05-05"),
+      max = as.Date("2019-09-05"),
+      value = c(as.Date("2019-09-05"),
+                as.Date("2019-05-05")),
+      timeFormat="%b-%Y"
     )
   )
 }
@@ -40,11 +50,9 @@ mod_01_var_select_ui <- function(id){
 mod_01_var_select_server <- function(input, output, session) {
   ns <- session$ns
   
-  tide_stations <-  vcrshiny::tides %>% 
-    dplyr::pull(station) %>% unique() %>% as.vector()
+  tide_stations <-  c("HOG4", "OYST", "REDB")
   
-  meteo_stations <-  vcrshiny::meteorology %>% 
-    dplyr::pull(station) %>% unique() %>% as.vector()
+  meteo_stations <-  c("OYSM", "HOG2", "PHCK2")
   
   var_choices <- reactive({
     
@@ -82,6 +90,14 @@ mod_01_var_select_server <- function(input, output, session) {
     
   })
 
+  time_period <- reactive({
+
+    tibble::tibble(end = max(eval(parse(text = paste0("vcrshiny::",
+                                              input$dataset)))$datetime)) %>%
+                   dplyr::mutate(start = end - months(2))
+
+  })
+  
   observe({
     updateSelectInput(
       session, 
@@ -98,8 +114,22 @@ mod_01_var_select_server <- function(input, output, session) {
     )
   })
   
+  observe({
+    updateSliderInput(
+      session,
+      "period",
+      min = time_period()$start,
+      max = time_period()$end,
+      value = c(time_period()$start,
+                time_period()$end),
+      timeFormat="%b-%Y",
+      step = 7
+    )
+  })
+  
   return(
     list(
+      period = reactive({ input$period }),
       dataset = reactive({ input$dataset }),
       station = reactive({ input$station }),
       variable = reactive({ input$variable })
