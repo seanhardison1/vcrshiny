@@ -42,20 +42,31 @@ mod_02_ts_vis_server <- function(input,
                      "std.wang" = "St. Dev. of Wind Direction (°)",
                      "rad.sol" = "Solar Radiation (kJ/m^2)",
                      "par" = "PAR (mmol/m^2/hr)",
-                     "soil.t" = "Soil Temperature (°C)"
+                     "soil.t" = "Soil Temperature (°C)",
+                     "relative_tide_level" ="Relative tide level (m)",
+                     "water_temperature"  = "Water temperature (°C)",
+                     "barometric_pressure" = "Barometric pressure (mm)"
                      )
     
+    if (plot1vars$variable() == "") {
+      return()
+    }
+    
     if (!is.null(plot1vars$station())){
-      df <- vcrshiny::meteorology %>% 
+
+      df <- eval(parse(text = paste0("vcrshiny::", plot1vars$dataset())))
+      df <- df %>% 
         dplyr::filter(station %in% plot1vars$station())
     } else {
-      df <- vcrshiny::meteorology
+      df <- eval(parse(text = paste0("vcrshiny::", plot1vars$dataset())))
     }
     
     #plot data
     p <- ggplot2::ggplot(data = df) +
-      ggplot2::geom_line(ggplot2::aes(x = datetime, y = base::get(paste(variable)),
-                    color = station)) +
+      ggplot2::geom_line(ggplot2::aes(x = datetime, 
+                                      y = base::get(paste(variable)),
+                                      color = station)) +
+      
       ggplot2::theme_bw() +
       ggplot2::ylab(ylabel)
     

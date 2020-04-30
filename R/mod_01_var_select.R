@@ -10,41 +10,25 @@
 mod_01_var_select_ui <- function(id){
   ns <- NS(id)
   
-  # define choices for X and Y variable selection
-  station_choices <- list(
-    "HOG2" = "HOG2",
-    "OYSM" = "OYSM",
-    "PHCK2" = "PHCK2"
-  )
-  variable_choices <- list(
-    `Precipitation (ml)` = "ppt",
-    `Avg. Temperature (°C)` = "avg.t",
-    `Min. Temperature (°C)` = "min.t",
-    `Avg. Relative Humidity (%)` = "avg.rh",
-    `Min. Relative Humidity (%)` = "min.rh",
-    `Max Relative Humidity (%)` = "max.rh",
-    `Avg. Wind Speed (m/s)` = "avg.ws",
-    `Avg. Wind Angle (°)` = "avg.wang",
-    `St. Dev. of Wind Direction (°)` = "std.wang",
-    `Solar Radiation (kJ/m^2)` = "rad.sol",
-    `PAR (mmol/m^2/hr)` = "par",
-    `Soil Temperature (°C)` = "soil.t"
-  )
-  
   tagList(
-    shiny::selectizeInput(
+    shiny::selectInput(
+      ns("dataset"),
+      "Select data",
+      choices = list("Meteorology" = "meteorology",
+                     "Tides & temperature" = "tides"),
+      selected = "meteorology"
+    ), 
+    
+    shiny::selectInput(
       ns("station"),
       "Select station",
-      choices = station_choices,
-      selected = NULL,
-      multiple = TRUE
+      choices = ""
     ),
     
     shiny::selectInput(
       ns("variable"),
       "Select variable",
-      choices = variable_choices,
-      selected = "ppt"
+      choices = ""
     )
   )
 }
@@ -56,10 +40,69 @@ mod_01_var_select_ui <- function(id){
 mod_01_var_select_server <- function(input, output, session) {
   ns <- session$ns
   
+  tide_stations <-  vcrshiny::tides %>% 
+    dplyr::pull(station) %>% unique() %>% as.vector()
+  
+  meteo_stations <-  vcrshiny::meteorology %>% 
+    dplyr::pull(station) %>% unique() %>% as.vector()
+  
+  var_choices <- reactive({
+    
+    if (input$dataset == "meteorology"){
+      vars <- list(var_choices = 
+             list(
+        `Precipitation (ml)` = "ppt",
+        `Avg. Temperature (°C)` = "avg.t",
+        `Min. Temperature (°C)` = "min.t",
+        `Avg. Relative Humidity (%)` = "avg.rh",
+        `Min. Relative Humidity (%)` = "min.rh",
+        `Max Relative Humidity (%)` = "max.rh",
+        `Avg. Wind Speed (m/s)` = "avg.ws",
+        `Avg. Wind Angle (°)` = "avg.wang",
+        `St. Dev. of Wind Direction (°)` = "std.wang",
+        `Solar Radiation (kJ/m^2)` = "rad.sol",
+        `PAR (mmol/m^2/hr)` = "par",
+        `Soil Temperature (°C)` = "soil.t"),
+          station_choices =
+              list(meteo_stations = meteo_stations)
+        )
+    } else if (input$dataset == "tides"){
+      vars <- list(var_choices = 
+             list(
+        `Relative tide level (m)` = "relative_tide_level",
+        `Water temperature (°C)` = "water_temperature",
+        `Barometric pressure (mm)` = "barometric_pressure"
+      ),
+      station_choices =
+        list(tide_stations = tide_stations)
+      )
+    }
+    
+    vars
+    
+  })
+
+  observe({
+    updateSelectInput(
+      session, 
+      "variable",
+      choices = var_choices()$var_choices
+    )
+  })
+  
+  observe({
+    updateSelectInput(
+      session,
+      "station",
+      choices = var_choices()$station_choices
+    )
+  })
+  
   return(
     list(
-      station = shiny::reactive({ input$station }),
-      variable = shiny::reactive({ input$variable })
+      dataset = reactive({ input$dataset }),
+      station = reactive({ input$station }),
+      variable = reactive({ input$variable })
     )
   )
 }
