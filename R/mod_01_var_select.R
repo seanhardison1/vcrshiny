@@ -94,8 +94,8 @@ mod_01_var_select_server <- function(input, output, session) {
 
     tibble::tibble(end = max(eval(parse(text = paste0("vcrshiny::",
                                               input$dataset)))$datetime)) %>%
-                   dplyr::mutate(start = end - base::months(6),
-                                 value = end - base::months(2))
+                   dplyr::mutate(start = end -  months(lubridate::month(6)),
+                                 value = end -  months(lubridate::month(2)))
 
   })
   
