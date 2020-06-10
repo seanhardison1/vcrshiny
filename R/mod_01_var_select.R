@@ -16,19 +16,21 @@ mod_01_var_select_ui <- function(id){
       "Select data",
       choices = list("Meteorology" = "meteorology",
                      "Tides & temperature" = "tides"),
-      selected = "meteorology"
+      selected = "tides"
     ), 
     
     shiny::selectInput(
       ns("station"),
       "Select station",
-      choices = ""
+      choices = "",
+      selected = "HOG4"
     ),
     
     shiny::selectInput(
       ns("variable"),
       "Select variable",
-      choices = ""
+      choices = "",
+      selected = ""
     ),
     
     shiny::sliderInput(

@@ -24,7 +24,8 @@ Imports:
     lubridate,
     pkgload,
     shinythemes,
-    dygraphs
+    dygraphs,
+    tydygraphs (>= 0.5.0)
 Remotes: 
     jpshanno/tydygraphs
 Encoding: UTF-8
