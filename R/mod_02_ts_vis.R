@@ -55,24 +55,30 @@ mod_02_ts_vis_server <- function(input,
       df <- df[df$datetime >= plot1vars$period()[1] &
                  df$datetime < plot1vars$period()[2],]
       
+
       if (!plot1vars$station() %in% unique(df$station)) {
         return()
       } else {
         df <- df[df$station == plot1vars$station(), ]
       }    
-      
+      # browser()
       p <- df %>% 
         tydygraphs::dygraph(!! rlang::sym(plot1vars$variable())) %>% 
-        dygraphs::dySeries(paste(plot1vars$variable(), plot1vars$station(), sep = "_"), 
+        
+        dygraphs::dySeries(paste(plot1vars$variable(), 
+                                 plot1vars$station(), 
+                                 sep = "_"), 
                            label = paste(plot1vars$station(),"-", ylabel)) %>% 
-        dygraphs::dyAxis("y",label = ylabel)
-  
+        
+        dygraphs::dyAxis("y",label = ylabel) %>% 
+        dygraphs::dyOptions(connectSeparatedPoints = TRUE)
+      
   })
   
   output$plot1 <- dygraphs::renderDygraph({
     plot1_obj()
   })
-  
+ 
 }
     
 ## To be copied in the UI

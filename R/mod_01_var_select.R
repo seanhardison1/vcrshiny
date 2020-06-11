@@ -59,29 +59,32 @@ mod_01_var_select_server <- function(input, output, session) {
   var_choices <- reactive({
     
     if (input$dataset == "meteorology"){
-      vars <- list(var_choices = 
+      vars <- 
+        list(var_choices = 
              list(
-        `Precipitation (ml)` = "ppt",
-        `Avg. Temperature (°C)` = "avg.t",
-        `Min. Temperature (°C)` = "min.t",
-        `Avg. Relative Humidity (%)` = "avg.rh",
-        `Min. Relative Humidity (%)` = "min.rh",
-        `Max Relative Humidity (%)` = "max.rh",
-        `Avg. Wind Speed (m/s)` = "avg.ws",
-        `Avg. Wind Angle (°)` = "avg.wang",
-        `St. Dev. of Wind Direction (°)` = "std.wang",
-        `Solar Radiation (kJ/m^2)` = "rad.sol",
-        `PAR (mmol/m^2/hr)` = "par",
-        `Soil Temperature (°C)` = "soil.t"),
+        "Precipitation (ml)" = "ppt",
+        "Avg. Temperature (°C)" = "avg.t",
+        "Min. Temperature (°C)" = "min.t",
+        "Avg. Relative Humidity (%)" = "avg.rh",
+        "Min. Relative Humidity (%)" = "min.rh",
+        "Max Relative Humidity (%)" = "max.rh",
+        "Avg. Wind Speed (m/s)" = "avg.ws",
+        "Avg. Wind Angle (°)" = "avg.wang",
+        "St. Dev. of Wind Direction (°)" = "std.wang",
+        "Solar Radiation (kJ/m^2)" = "rad.sol",
+        "PAR (mmol/m^2/hr)" = "par",
+        "Soil Temperature (°C)" = "soil.t"),
           station_choices =
               list(meteo_stations = meteo_stations)
         )
+
     } else if (input$dataset == "tides"){
-      vars <- list(var_choices = 
+      vars <-
+        list(var_choices = 
              list(
-        `Relative tide level (m)` = "relative_tide_level",
-        `Water temperature (°C)` = "water_temperature",
-        `Barometric pressure (mm)` = "barometric_pressure"
+        "Relative tide level (m)" = "relative_tide_level",
+        "Water temperature (°C)" = "water_temperature",
+        "Barometric pressure (mm)" = "barometric_pressure"
       ),
       station_choices =
         list(tide_stations = tide_stations)
@@ -100,7 +103,6 @@ mod_01_var_select_server <- function(input, output, session) {
                                  value = end -  months(lubridate::month(2)))
 
   })
-  
   observe({
     updateSelectInput(
       session, 
