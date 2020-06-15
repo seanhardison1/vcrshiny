@@ -1,19 +1,13 @@
-# Package ID: knb-lter-vcr.25.40 Cataloging System:https://pasta.edirepository.org.
-# Data set title: Hourly Meteorological Data for the Virginia Coast Reserve LTER 1989-present.
-# Data set creator:  John Porter -  
-# Data set creator:  David Krovetz -  
-# Data set creator:  William Nuttle -  
-# Data set creator:  James Spitler -  
-# Metadata Provider:    - Virginia Coast Reserve Long-Term Ecological Research Project 
-# Contact:  John Porter -    - jhp7e@virginia.edu
-# Contact:    - Information manager - Virginia Coast Reserve Long-Term Ecological Research Project   - jhp7e@virginia.edu
-# Stylesheet for metadata conversion into program: John H. Porter, Univ. Virginia, jporter@lternet.edu 
+# Porter, J., D. Krovetz, W. Nuttle, and J. Spitler. 2020. 
+# Hourly Meteorological Data for the Virginia Coast Reserve LTER 1989-present ver 41. 
+# Environmental Data Initiative. https://doi.org/10.6073/pasta/06db7a25a4f157f514def6addcdfdd53 (Accessed 2020-06-12).
+
 library(RCurl)
 library(tidyverse)
 library(lubridate)
 library(tsibble)
 
-infile1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-vcr/25/40/32a020479d23312012444a5b4ff81658" 
+infile1  <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/whour_all_years.csv" 
 infile1 <- sub("^https","http",infile1)
 dt1 <-readr::read_csv(infile1, skip = 24, quote = '"', col_names = c(
   "STATION",     
@@ -51,8 +45,8 @@ meteorology <- dt1 %>%
   dplyr::rename(station = STATION) %>% 
   group_by(station) %>% 
   filter(!duplicated(datetime), year(datetime) > 2017) %>% 
-  tsibble::as_tsibble(., key = station) %>%
-  fill_gaps(.,.full = TRUE)
+  tsibble::as_tsibble(., key = station)# %>%
+ # fill_gaps(.,.full = TRUE)
 
 names(meteorology) <- str_to_lower(names(meteorology))
   

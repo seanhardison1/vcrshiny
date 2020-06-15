@@ -23,7 +23,7 @@ mod_01_var_select_ui <- function(id){
       ns("station"),
       "Select station",
       choices = "",
-      selected = "HOG4"
+      selected = "OYST"
     ),
     
     shiny::selectInput(
@@ -52,7 +52,7 @@ mod_01_var_select_ui <- function(id){
 mod_01_var_select_server <- function(input, output, session) {
   ns <- session$ns
   
-  tide_stations <-  c("HOG4", "OYST", "REDB")
+  tide_stations <-  c("OYST", "REDB", "HOG4")
   
   meteo_stations <-  c("OYSM", "HOG2", "PHCK2")
   

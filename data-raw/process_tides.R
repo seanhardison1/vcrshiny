@@ -7,7 +7,7 @@ library(tsibble)
 # knb-lter-vcr.61.33 (http://www.vcrlter.virginia.educgi-bin/showDataset.cgi?docid=knb-lter-vcr.61.33).
 
 # Read in data from VCR database
-fname <- "https://portal.lternet.edu/nis/dataviewer?packageid=knb-lter-vcr.61.32&entityid=3b20e41c3c4d103948d2a12cb9398a35&rows=10"
+fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/tidedata/VCRTide.csv"
 infile1 <- readr::read_csv(fname, 
                            skip = 23,
                            col_names = c("station",
@@ -34,8 +34,8 @@ tides <-
   dplyr::filter(!is.na(datetime)) %>%
   group_by(station) %>%
   filter(!duplicated(datetime)) %>% 
-  tsibble::as_tsibble(., key = station) %>% 
-  fill_gaps()
+  tsibble::as_tsibble(., key = station) #%>% 
+  #fill_gaps()
 
 # export to package
 usethis::use_data(tides, overwrite = TRUE)
