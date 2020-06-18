@@ -5,10 +5,18 @@
 #' @import shiny
 #' @noRd
 app_ui <- function(request){
-  tagList(
-    shiny::fluidPage(theme = shinythemes::shinytheme("simplex"),
+  
+# Navigation bar---------------------------------------------------------------
+  
+  bootstrapPage(
+    navbarPage(theme = shinythemes::shinytheme("simplex"), collapsible = TRUE,
+               "VCR Data Explorer", id="nav",
+               
+# Tides and meteorological data------------------------------------------------
+    tabPanel("Tides and Meteorology",
+    # shiny::fluidPage(theme = shinythemes::shinytheme("simplex"),
 
-      shiny::titlePanel("VCR Data Explorer"),
+      shiny::titlePanel("Tides and meteorology"),
       
       shiny::fluidRow(
         shiny::column(
@@ -18,6 +26,18 @@ app_ui <- function(request){
           )
         ),
         mod_02_ts_vis_ui("02_ts_vis_ui_1")
+       )
+      ),
+    
+# Marsh vegetation surveys----------------------------------------------------
+    tabPanel("Marsh Vegetation",
+             tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
+      shiny::titlePanel("Marsh vegetation surveys"),
+      fluidPage(
+        shiny::mainPanel(
+          mod_03_veg_surv_ui("03_veg_surv_ui_1")
+        )
+       )
       )
     )
   )
