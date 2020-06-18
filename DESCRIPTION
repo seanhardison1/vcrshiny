@@ -25,6 +25,7 @@ Imports:
     pkgload,
     shinythemes,
     dygraphs,
+    leaflet,
     tydygraphs (>= 0.5.0)
 Remotes: 
     jpshanno/tydygraphs
