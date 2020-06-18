@@ -11,4 +11,7 @@ app_server <- function(input, output, session) {
 
   # execute leaflet module
   callModule(mod_03_veg_surv_server, "03_veg_surv_ui_1")
+  
+  # execute marsh vegetation variable selection module
+  callModule(mod_04_veg_var_select_server, "04_veg_var_select_ui_1")
 }

@@ -9,7 +9,7 @@
 #' @importFrom shiny NS tagList 
 mod_03_veg_surv_ui <- function(id){
   ns <- NS(id)
-  leaflet::leafletOutput(ns("vcrmap"), width = "100%", height = "800px")
+    leaflet::leafletOutput(ns("vcrmap"), width = "100%", height = "800px")
 }
     
 #' veg_surv Server Function

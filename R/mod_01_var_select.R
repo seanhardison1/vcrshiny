@@ -96,7 +96,7 @@ mod_01_var_select_server <- function(input, output, session) {
   })
 
   time_period <- reactive({
-
+    # browser()
     tibble::tibble(end = max(eval(parse(text = paste0("vcrshiny::",
                                               input$dataset)))$datetime)) %>%
                    dplyr::mutate(start = end -  months(lubridate::month(6)),

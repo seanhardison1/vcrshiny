@@ -15,4 +15,12 @@ marsh_veg_locs <-
   filter(marshName != "Broad Creek") %>% 
   distinct()
 
-usethis::use_data(marsh_veg, marsh_veg_locs, overwrite = TRUE)
+marsh_veg_species <- 
+  marsh_veg %>% 
+  pull(speciesName) %>% 
+  unique()
+
+usethis::use_data(marsh_veg, 
+                  marsh_veg_locs, 
+                  marsh_veg_species,
+                  overwrite = TRUE)
