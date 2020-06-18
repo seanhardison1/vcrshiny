@@ -49,7 +49,7 @@ mod_04_veg_var_select_server <- function(input, output, session){
 
       vcrshiny::marsh_veg %>% 
         dplyr::filter(marshName %in% input$marsh_loc) %>% 
-        pull(speciesName) %>% 
+        dplyr::pull(speciesName) %>% 
         unique()
 
     })
@@ -67,11 +67,11 @@ mod_04_veg_var_select_server <- function(input, output, session){
   period_choice <- reactive({
     
     if (is.null(input$species)){
-      tibble(end = 2018,
+      dplyr::tibble(end = 2018,
             start = 1999,
             value = start)
     } else {
-      tibble::tibble(end = max(vcrshiny::marsh_veg[vcrshiny::marsh_veg$speciesName %in% input$species,]$year)) %>%
+      dplyr::tibble(end = max(vcrshiny::marsh_veg[vcrshiny::marsh_veg$speciesName %in% input$species,]$year)) %>%
         dplyr::mutate(start = min(vcrshiny::marsh_veg[vcrshiny::marsh_veg$speciesName %in% input$species,]$year),
                       value = start) 
     }
