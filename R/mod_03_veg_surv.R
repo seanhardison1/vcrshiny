@@ -19,9 +19,11 @@ mod_03_veg_surv_server <- function(input, output, session){
   ns <- session$ns
   
   output$vcrmap <- leaflet::renderLeaflet({
-    leaflet::leaflet(height=500) %>% 
+    leaflet::leaflet(data = vcrshiny::marsh_veg_locs, height=500) %>% 
       leaflet::addTiles() %>% 
-      leaflet::setView(lng = -75.8, lat = 37.5, zoom = 10)
+      leaflet::setView(lng = -75.8, lat = 37.5, zoom = 10) %>% 
+      leaflet::addCircleMarkers(lng = ~longitude, lat = ~latitude, label = ~marshName,
+                                stroke = FALSE, fillOpacity = 0.5)
   })
  
 }
