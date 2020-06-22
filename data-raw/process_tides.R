@@ -1,6 +1,7 @@
-library(tidyverse)
+library(dplyr)
 library(lubridate)
 library(tsibble)
+library(stringr)
 library(magrittr)
 
 # Porter, J., D. Krovetz, J. Spitler, J. Spitler, T. Williams and K. Overman. 2019. Tide Data for Hog Island (1991-), 
