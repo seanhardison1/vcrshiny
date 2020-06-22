@@ -4,3 +4,11 @@ warnings_are_errors: false
 script:
   - Rscript -e "source('data-raw/process_tides.R')"
   - Rscript -e "source('data-raw/process_meteorology.R')"
+ 
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN 
+  keep_history: true
+  on:
+    branch: master
