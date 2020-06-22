@@ -5,7 +5,10 @@ library(dplyr)
 library(lubridate)
 library(tsibble)
 library(stringr)
+library(magrittr)
 
+# load old data
+load("data/meteorology.rda")
 
 # infile1  <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/whour_all_years.csv" 
 infile1 <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayWeather.csv"
@@ -49,6 +52,7 @@ meteo_new <- dt1 %>%
 
 names(meteo_new) <- str_to_lower(names(meteo_new))
 
-meteorology <- vcrshiny::meteorology %>% bind_rows(meteo_new)   
+meteorology %<>% bind_rows(meteo_new)   
 
+# export for packaging
 usethis::use_data(meteorology, overwrite = TRUE)

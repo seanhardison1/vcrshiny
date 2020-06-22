@@ -8,6 +8,9 @@ library(magrittr)
 # Redbank (1992-), Oyster (2007-) . Virginia Coast Reserve Long-Term Ecological Research Project Data Publication
 # knb-lter-vcr.61.33 (http://www.vcrlter.virginia.educgi-bin/showDataset.cgi?docid=knb-lter-vcr.61.33).
 
+#load old data
+load("data/tides.rda")
+
 # Read in data from VCR database
 # fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/tidedata/VCRTide.csv"
 fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayTide.csv"
@@ -39,7 +42,7 @@ tides_new <-
   filter(!duplicated(datetime)) %>% 
   tsibble::as_tsibble(., key = station)
   
-tides <- vcrshiny::tides %>% bind_rows(tides_new) 
+tides %<>% bind_rows(tides_new) 
 
-# export to package
+# export for packaging
 usethis::use_data(tides, overwrite = TRUE)
