@@ -4,7 +4,7 @@ warnings_are_errors: false
 script:
   - Rscript -e "source('data-raw/process_tides.R')"
   - Rscript -e "source('data-raw/process_meteorology.R')"
-  - ./_deploy.sh
+  - chmod +x ./_deploy.sh
  
 deploy:
   provider: pages
