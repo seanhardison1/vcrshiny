@@ -1,13 +1,15 @@
 library(tidyverse)
 library(lubridate)
 library(tsibble)
+library(magrittr)
 
 # Porter, J., D. Krovetz, J. Spitler, J. Spitler, T. Williams and K. Overman. 2019. Tide Data for Hog Island (1991-), 
 # Redbank (1992-), Oyster (2007-) . Virginia Coast Reserve Long-Term Ecological Research Project Data Publication
 # knb-lter-vcr.61.33 (http://www.vcrlter.virginia.educgi-bin/showDataset.cgi?docid=knb-lter-vcr.61.33).
 
 # Read in data from VCR database
-fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/tidedata/VCRTide.csv"
+# fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/tidedata/VCRTide.csv"
+fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayTide.csv"
 infile1 <- readr::read_csv(fname, 
                            skip = 23,
                            col_names = c("station",
@@ -15,10 +17,11 @@ infile1 <- readr::read_csv(fname,
                                          "time",
                                          "relative_tide_level",
                                          "water_temperature",
-                                         "barometric_pressure"))
+                                         "barometric_pressure")) %>% 
+  dplyr::select(-barometric_pressure)
 
 # Process for use in package format
-tides <- 
+tides_new <- 
   infile1 %>% 
   mutate_all(function(x)ifelse(x == ".", NA, x)) %>% 
   mutate(date = as.Date(date, format = "%d%b%Y"),
@@ -29,13 +32,13 @@ tides <-
                                format="%Y-%m-%d %I:%M %p"),
          water_temperature = as.numeric(water_temperature),
          station = as.factor(station)) %>% 
-  filter(year(datetime) > 2018) %>% 
   dplyr::select(-date, -time) %>%
   dplyr::filter(!is.na(datetime)) %>%
   group_by(station) %>%
   filter(!duplicated(datetime)) %>% 
-  tsibble::as_tsibble(., key = station) #%>% 
-  #fill_gaps()
+  tsibble::as_tsibble(., key = station)
+  
+tides <- vcrshiny::tides %>% bind_rows(tides_new) 
 
 # export to package
 usethis::use_data(tides, overwrite = TRUE)

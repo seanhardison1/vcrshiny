@@ -1,1 +1,5 @@
 language: r
+warnings_are_errors: false
+
+script:
+  - Rscript -e "source(data-raw/process_tides.R)"
