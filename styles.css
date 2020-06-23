@@ -1,0 +1,39 @@
+/* Thanks to eparker12 for aesthetically pleasing css! */
+
+input[type="number"] {
+  max-width: 80%;
+}
+
+div.outer {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* Customize fonts */
+  body, label, input, button, select { 
+    font-family: 'Helvetica Neue', Helvetica;
+    font-weight: 200;
+  }
+h1, h2, h3, h4 { font-weight: 400; }
+
+#controls {
+/* Appearance */
+  background-color: white;
+padding: 0 10px 10px 10px;
+cursor: move;
+/* Fade out while not hovering */
+opacity: 0.85;
+zoom: 1;
+transition: opacity 500ms 1s;
+}
+
+#controls:hover {
+/* Fade in while hovering */
+  opacity: 1;
+transition-delay: 0;
+}
