@@ -10,7 +10,7 @@
 mod_04_veg_var_select_ui <- function(id){
   ns <- NS(id)
   tagList(
-    shiny::selectInput(
+    shiny::selectizeInput(
       ns("marsh_loc"),
       "Select location(s)",
       choices = vcrshiny::marsh_veg_locs$marshName,
@@ -46,12 +46,10 @@ mod_04_veg_var_select_server <- function(input, output, session){
   
   # Species choices are based on marsh location(s)------------------
   spec_choices <- reactive({
-
       vcrshiny::marsh_veg %>% 
         dplyr::filter(marshName %in% input$marsh_loc) %>% 
         dplyr::pull(speciesName) %>% 
         unique()
-
     })
   
   # Update species choices
@@ -62,7 +60,7 @@ mod_04_veg_var_select_server <- function(input, output, session){
       choices = spec_choices()
     )
   })
-  
+
   # Period choice is based on marsh location(s)--------------------
   period_choice <- reactive({
     
@@ -87,6 +85,12 @@ mod_04_veg_var_select_server <- function(input, output, session){
                 period_choice()$end)
       )
   })
+  
+  return(
+    list(
+      marsh_locs = reactive({ input$marsh_loc })
+    )
+  )
   
 }
     

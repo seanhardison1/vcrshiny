@@ -45,9 +45,7 @@ mod_02_ts_vis_server <- function(input,
                      "barometric_pressure" = "Barometric pressure (mm)"
                      )
     
-    if (plot1vars$variable() == "") {
-      return()
-    }
+    if (plot1vars$variable() == "") return()
   
 
       df <- eval(parse(text = paste0("vcrshiny::", plot1vars$dataset())))
