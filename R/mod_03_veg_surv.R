@@ -55,7 +55,7 @@ mod_03_veg_surv_server <- function(input, output,
     # if no location inputs, show all markers as purple dots
     if (nrow(df) == 0){
       proxy_map %>% 
-        clearMarkers() %>% 
+        leaflet::clearMarkers() %>% 
         leaflet::addCircleMarkers(data = mvl_base,
                                   lng = ~longitude,
                                   lat = ~latitude, 
@@ -66,7 +66,7 @@ mod_03_veg_surv_server <- function(input, output,
     } else {
     # otherwise, highlight markers one by one in orange
       proxy_map %>% 
-        clearMarkers() %>% 
+        leaflet::clearMarkers() %>% 
         leaflet::addCircleMarkers(data = mvl_base,
                                   lng = ~longitude,
                                   lat = ~latitude, 
