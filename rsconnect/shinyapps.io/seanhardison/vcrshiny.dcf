@@ -1,0 +1,13 @@
+name: vcrshiny
+title: vcrshiny
+username:
+account: seanhardison
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2238850
+bundleId: 3304340
+url: https://seanhardison.shinyapps.io/vcrshiny/
+when: 1592871023.44862
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .Rbuildignore|.travis.yml|Dockerfile
