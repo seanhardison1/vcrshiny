@@ -15,7 +15,8 @@ mod_03_veg_surv_ui <- function(id){
 #' veg_surv Server Function
 #'
 #' @noRd 
-mod_03_veg_surv_server <- function(input, output, 
+mod_03_veg_surv_server <- function(input, 
+                                   output, 
                                    session,
                                    leafvars){
   ns <- session$ns

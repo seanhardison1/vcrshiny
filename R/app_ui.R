@@ -42,8 +42,15 @@ app_ui <- function(request){
           id = "controls",
           mod_04_veg_var_select_ui("04_veg_var_select_ui_1"),
           class = "panel panel-default",
-          top = 175, left = 45, width = 330, fixed=F,
+          top = 70, left = 55, width = 330, fixed=F,
           draggable = TRUE, height = "auto"
+            ),
+          shiny::absolutePanel(
+            id = "controls",
+            mod_05_veg_plotting_ui("05_veg_plotting_ui_1"),
+            class = "panel panel-default",
+            top = 400, left = 55, width = 500, fixed=F,
+            draggable = TRUE, height = "auto"
             )
           )
         )

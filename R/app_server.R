@@ -19,5 +19,10 @@ app_server <- function(input, output, session) {
              "03_veg_surv_ui_1",
              leafvars = leafvars)
   
+  # plotting module for marsh vegetation
+  callModule(mod_05_veg_plotting_server, 
+             "05_veg_plotting_ui_1",
+             leafvars = leafvars)
+  
 
 }

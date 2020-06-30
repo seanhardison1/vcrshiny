@@ -88,10 +88,11 @@ mod_04_veg_var_select_server <- function(input, output, session){
   
   return(
     list(
-      marsh_locs = reactive({ input$marsh_loc })
+      marsh_locs = reactive({ input$marsh_loc }),
+      period_choice = reactive({ input$period_veg }),
+      spec_choices = reactive({ input$species })
+      )
     )
-  )
-  
 }
     
 ## To be copied in the UI
