@@ -10,8 +10,8 @@ library(magrittr)
 # load old data
 load("data/meteorology.rda")
 
-# infile1  <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/whour_all_years.csv" 
-infile1 <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayWeather.csv"
+infile1  <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/whour_all_years.csv"
+# infile1 <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayWeather.csv"
 dt1 <-readr::read_csv(infile1, quote = '"', col_names = c(
       "STATION",
       "YEAR",

@@ -9,6 +9,7 @@ app_ui <- function(request){
 # Navigation bar---------------------------------------------------------------
   
   bootstrapPage(
+    shinyFeedback::useShinyFeedback(),
     navbarPage(theme = shinythemes::shinytheme("simplex"), collapsible = TRUE,
                "VCR Data Explorer", id="nav",
                

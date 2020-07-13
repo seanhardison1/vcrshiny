@@ -21,8 +21,8 @@ mod_04_veg_var_select_ui <- function(id){
     shiny::selectizeInput(
       ns("species"),
       "Select species",
-      choices = "",
-      selected = NULL,
+      choices = stringr::str_sort(vcrshiny::marsh_veg_species),
+      selected = "Spartina alterniflora",
       multiple = TRUE
     ),
     
@@ -42,25 +42,43 @@ mod_04_veg_var_select_ui <- function(id){
 #' @noRd 
 mod_04_veg_var_select_server <- function(input, output, session){
   ns <- session$ns
-
   
-  # Species choices are based on marsh location(s)------------------
-  spec_choices <- reactive({
-      vcrshiny::marsh_veg %>% 
-        dplyr::filter(marshName %in% input$marsh_loc) %>% 
-        dplyr::pull(speciesName) %>% 
-        unique()
-    })
+  # Get all possible species and marsh choices
+  spec_choices <- vcrshiny::marsh_veg %>%
+    dplyr::select(marshName, speciesName) %>% 
+    dplyr::distinct()
   
-  # Update species choices
+  # Give warnings if species are not present in selection
+  
   observe({
-    updateSelectInput(
-      session, 
-      "species",
-      choices = spec_choices()
-    )
+    n <- spec_choices %>% 
+      dplyr::filter(marshName %in% input$marsh_loc)
+    
+    s <- spec_choices %>% 
+      dplyr::filter(speciesName %in% input$species)
+    
+    # browser()
+    if (!all(input$species %in% unique(n$speciesName))){
+      shinyFeedback::showFeedbackWarning(
+        inputId = "species",
+        text = "Species not found at any or all selected marsh sites."
+      )
+    } else {
+      shinyFeedback::hideFeedback("species")
+    }
+    
+    if (!all(input$marsh_loc %in% unique(s$marshName))){
+      shinyFeedback::showFeedbackWarning(
+        inputId = "marsh_loc",
+        text = "Species not found at any or all selected marsh sites."
+      )
+    } else {
+      shinyFeedback::hideFeedback("marsh_loc")
+    }
+
   })
 
+ 
   # Period choice is based on marsh location(s)--------------------
   period_choice <- reactive({
     

@@ -26,6 +26,7 @@ Imports:
     shinythemes,
     dygraphs,
     ggsci,
+    shinyFeedback,
     leaflet,
     tydygraphs (>= 0.5.0),
     readr,
