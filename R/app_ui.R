@@ -50,7 +50,7 @@ app_ui <- function(request){
             id = "controls",
             mod_05_veg_plotting_ui("05_veg_plotting_ui_1"),
             class = "panel panel-default",
-            top = 400, left = 55, width = 500, fixed=F,
+            top = 400, left = 55, width = 800, fixed=F,
             draggable = TRUE, height = "auto"
             )
           )

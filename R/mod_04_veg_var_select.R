@@ -61,7 +61,7 @@ mod_04_veg_var_select_server <- function(input, output, session){
     if (!all(input$species %in% unique(n$speciesName))){
       shinyFeedback::showFeedbackWarning(
         inputId = "species",
-        text = "Species not found at any or all selected marsh sites."
+        text = "Species not found at selected marsh sites."
       )
     } else {
       shinyFeedback::hideFeedback("species")

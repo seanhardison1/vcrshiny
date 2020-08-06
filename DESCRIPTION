@@ -31,7 +31,8 @@ Imports:
     tydygraphs (>= 0.5.0),
     readr,
     usethis,
-    tsibble
+    tsibble,
+    ggtext
 Remotes: 
     jpshanno/tydygraphs
 Encoding: UTF-8

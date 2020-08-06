@@ -50,14 +50,27 @@ mod_05_veg_plotting_server <- function(input,
     
     if (is.null(leafvars$spec_choices())) return()
     
-    ggplot2::ggplot(df()) +
-      ggplot2::geom_point(ggplot2::aes(x = year, 
-                                       y = liveMass,
-                                       color = marshName,
-                                       group = year)) +
-      ggplot2::facet_wrap(.~speciesName) +
+    df() %>% 
+      mutate(year = factor(year),
+             marshName = factor(marshName)) %>% 
+    ggplot2::ggplot() +
+      geom_boxplot(aes(x = year, 
+                       y = liveMass,
+                       fill = marshName,
+                       color = marshName),
+                   alpha = 0.2) +
+      ggsci::scale_fill_d3() +
+      ggplot2::facet_wrap(.~speciesName_ital, scales = "free_y") +
+      ggplot2::labs(color = "Sampling\n location",
+                    fill = "Sampling\n location",
+                    x = "Year",
+                    y = "Live mass (g 0.625 m<sup>-2</sup>)") +
       ggsci::scale_color_d3() +
       ggplot2::theme(
+        strip.text = ggtext::element_markdown(size = 14),
+        axis.title.y = ggtext::element_markdown(size = 13),
+        axis.title.x = ggplot2::element_text(size = 13),
+        axis.text.x = ggplot2::element_text(angle = 45, vjust = 0.8, size = 12),
         strip.background = ggplot2::element_blank(),
         panel.grid.major = ggplot2::element_blank(),
         panel.grid.minor = ggplot2::element_blank(),
@@ -65,8 +78,8 @@ mod_05_veg_plotting_server <- function(input,
         panel.border = ggplot2::element_rect(colour = "black", fill=NA,
                                              size=0.2),
         legend.key = ggplot2::element_blank(),
-        axis.title = ggplot2::element_text(size = 10)
-      )
+        legend.title = ggplot2::element_text(size = 14),
+        axis.title = ggplot2::element_text(size = 10))
 })
   
 
