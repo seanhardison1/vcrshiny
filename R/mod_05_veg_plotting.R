@@ -51,10 +51,10 @@ mod_05_veg_plotting_server <- function(input,
     if (is.null(leafvars$spec_choices())) return()
     
     df() %>% 
-      mutate(year = factor(year),
+      dplyr::mutate(year = factor(year),
              marshName = factor(marshName)) %>% 
     ggplot2::ggplot() +
-      geom_boxplot(aes(x = year, 
+      ggplot2::geom_boxplot(ggplot2::aes(x = year, 
                        y = liveMass,
                        fill = marshName,
                        color = marshName),
