@@ -4,12 +4,12 @@ warnings_are_errors: false
 script:
   - Rscript -e "source('data-raw/process_tides.R')"
   - Rscript -e "source('data-raw/process_meteorology.R')"
-  - chmod +x ./_deploy.sh
  
 deploy:
   provider: pages
   skip_cleanup: true
   github_token: $GITHUB_TOKEN 
   keep_history: true
+  target_branch: master        # Add this line - To push into GitHub master branch
   on:
-    branch: master
+    branch: staging
