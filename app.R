@@ -5,4 +5,3 @@
 pkgload::load_all(export_all = TRUE,helpers = FALSE,attach_testthat = FALSE)
 options( "golem.app.prod" = TRUE)
 vcrshiny::run_app() # add parameters here (if any)
-
