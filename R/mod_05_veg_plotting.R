@@ -44,7 +44,7 @@ mod_05_veg_plotting_server <- function(input,
     Sys.sleep(1)
     shinyFeedback::resetLoadingButton("plot_button")
   })
-    
+   
   # Show figure
   output$veg_plot <- shiny::renderPlot({
     

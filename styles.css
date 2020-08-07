@@ -21,6 +21,11 @@ div.outer {
   }
 h1, h2, h3, h4 { font-weight: 400; }
 
+p {
+  font-size: 15px;
+  font-weight: 400;
+}
+
 #controls {
 /* Appearance */
   background-color: white;
