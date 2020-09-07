@@ -41,7 +41,7 @@ tides_new <-
   group_by(station) %>%
   filter(!duplicated(datetime)) %>% 
   tsibble::as_tsibble(., key = station)
-  
+
 tides %<>% bind_rows(tides_new) 
 
 # export for packaging
