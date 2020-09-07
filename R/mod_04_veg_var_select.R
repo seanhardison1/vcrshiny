@@ -36,7 +36,7 @@ mod_04_veg_var_select_ui <- function(id){
     )
   )
 }
-    
+
 #' 04_veg_var_select Server Function
 #'
 #' @noRd 
@@ -61,7 +61,7 @@ mod_04_veg_var_select_server <- function(input, output, session){
     if (!all(input$species %in% unique(n$speciesName))){
       shinyFeedback::showFeedbackWarning(
         inputId = "species",
-        text = "Species not found at any or all selected marsh sites."
+        text = "Species not found at selected marsh sites."
       )
     } else {
       shinyFeedback::hideFeedback("species")
@@ -75,17 +75,17 @@ mod_04_veg_var_select_server <- function(input, output, session){
     } else {
       shinyFeedback::hideFeedback("marsh_loc")
     }
-
+    
   })
-
- 
+  
+  
   # Period choice is based on marsh location(s)--------------------
   period_choice <- reactive({
     
     if (is.null(input$species)){
       dplyr::tibble(end = 2018,
-            start = 1999,
-            value = start)
+                    start = 1999,
+                    value = start)
     } else {
       dplyr::tibble(end = max(vcrshiny::marsh_veg[vcrshiny::marsh_veg$speciesName %in% input$species,]$year)) %>%
         dplyr::mutate(start = min(vcrshiny::marsh_veg[vcrshiny::marsh_veg$speciesName %in% input$species,]$year),
@@ -101,7 +101,7 @@ mod_04_veg_var_select_server <- function(input, output, session){
       max = period_choice()$end,
       value = c(period_choice()$value,
                 period_choice()$end)
-      )
+    )
   })
   
   return(
@@ -109,13 +109,12 @@ mod_04_veg_var_select_server <- function(input, output, session){
       marsh_locs = reactive({ input$marsh_loc }),
       period_choice = reactive({ input$period_veg }),
       spec_choices = reactive({ input$species })
-      )
     )
+  )
 }
-    
+
 ## To be copied in the UI
 # mod_04_veg_var_select_ui("04_veg_var_select_ui_1")
-    
+
 ## To be copied in the server
 # callModule(mod_04_veg_var_select_server, "04_veg_var_select_ui_1")
- 
