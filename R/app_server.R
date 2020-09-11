@@ -24,5 +24,10 @@ app_server <- function(input, output, session) {
              "05_veg_plotting_ui_1",
              leafvars = leafvars)
   
+  # execute fish variable selection module
+  fishvars <- callModule(mod_06_fish_var_select_server, "fish_var_select_ui_1")
+  
+  # plotting module for fish data
+  callModule(mod_07_fish_plotting_server, "07_fish_plotting_ui_1")
 
 }

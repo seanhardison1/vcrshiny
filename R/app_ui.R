@@ -81,7 +81,21 @@ app_ui <- function(request){
                                       ),
                                       mod_02_ts_vis_ui("02_ts_vis_ui_1")
                                     )
-                           )
+                           ),
+                           tabPanel("Fish Seine Surveys",
+                                    shiny::titlePanel("Fish Seine Surveys"),
+                                    
+                                    shiny::fluidRow(
+                                      shiny::column(
+                                        width = 3,
+                                        shiny::wellPanel(
+                                          mod_06_fish_var_select_ui("fish_var_select_ui_1")
+                                        )
+                                      ),
+                                      mod_07_fish_plotting_ui("07_fish_plotting_ui_1")
+                                    )
+                                    
+                                    )
                            
                 )
   )
