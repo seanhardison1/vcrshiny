@@ -8,6 +8,8 @@ library(magrittr)
 # Redbank (1992-), Oyster (2007-) . Virginia Coast Reserve Long-Term Ecological Research Project Data Publication
 # knb-lter-vcr.61.33 (http://www.vcrlter.virginia.educgi-bin/showDataset.cgi?docid=knb-lter-vcr.61.33).
 
+print(paste("Time of data pull is", Sys.time()))
+
 #load old data
 load("data/tides.rda")
 
@@ -15,14 +17,14 @@ load("data/tides.rda")
 # fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/tidedata/VCRTide.csv"
 fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayTide.csv"
 infile1 <- readr::read_csv(fname, 
-                           skip = 23,
-                           col_names = c("station",
+                            col_names = c("station",
                                          "date",
                                          "time",
                                          "relative_tide_level",
                                          "water_temperature",
                                          "barometric_pressure")) %>% 
   dplyr::select(-barometric_pressure)
+
 
 # Process for use in package format
 tides_new <- 
@@ -42,7 +44,13 @@ tides_new <-
   filter(!duplicated(datetime)) %>% 
   tsibble::as_tsibble(., key = station)
 
-tides %<>% bind_rows(tides_new) 
+# Report on data pull
+print(paste("Existing data ends at:", max(tides$datetime)))
+print(paste("New data begins at:",min(tides_new$datetime)))
+print(paste("New data ends at:",max(tides_new$datetime)))
+
+# Bind new to old
+tides %<>% bind_rows(tides_new) %>% distinct()
 
 # export for packaging
 usethis::use_data(tides, overwrite = TRUE)

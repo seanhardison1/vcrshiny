@@ -52,7 +52,12 @@ meteo_new <- dt1 %>%
 
 names(meteo_new) <- str_to_lower(names(meteo_new))
 
+# Report on data pull
+print(paste("Existing data ends at:", max(meteorology$datetime)))
+print(paste("New data ends at:",max(meteo_new$datetime)))
+
 meteorology %<>% bind_rows(meteo_new)   
+
 
 # export for packaging
 usethis::use_data(meteorology, overwrite = TRUE)
