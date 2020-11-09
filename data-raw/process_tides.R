@@ -3,6 +3,7 @@ library(lubridate)
 library(tsibble)
 library(stringr)
 library(magrittr)
+library(xts)
 
 # Porter, J., D. Krovetz, J. Spitler, J. Spitler, T. Williams and K. Overman. 2019. Tide Data for Hog Island (1991-), 
 # Redbank (1992-), Oyster (2007-) . Virginia Coast Reserve Long-Term Ecological Research Project Data Publication
@@ -27,30 +28,27 @@ infile1 <- readr::read_csv(fname,
 
 
 # Process for use in package format
-tides_new <- 
+tides_new_df <-
   infile1 %>% 
-  mutate_all(function(x)ifelse(x == ".", NA, x)) %>% 
-  mutate(date = as.Date(date, format = "%d%b%Y"),
-         time = format(strptime(substr(as.POSIXct(sprintf("%04.0f", as.numeric(time)),
-                                                  format="%H%M"), 12, 16), 
-                                '%H:%M'), '%I:%M %p'),
-         datetime = as.POSIXct(paste(date, time), 
-                               format="%Y-%m-%d %I:%M %p"),
-         water_temperature = as.numeric(water_temperature),
-         station = as.factor(station)) %>% 
-  dplyr::select(-date, -time) %>%
-  dplyr::filter(!is.na(datetime)) %>%
-  group_by(station) %>%
-  filter(!duplicated(datetime)) %>% 
-  tsibble::as_tsibble(., key = station)
-
-# Report on data pull
-print(paste("Existing data ends at:", max(tides$datetime)))
-print(paste("New data begins at:",min(tides_new$datetime)))
-print(paste("New data ends at:",max(tides_new$datetime)))
+    filter(station == "OYST") %>% 
+    dplyr::select(-station) %>% 
+    mutate_all(function(x)ifelse(x == ".", NA, x)) %>% 
+    mutate(date = as.Date(date, format = "%d%b%Y"),
+           time = format(strptime(substr(as.POSIXct(sprintf("%04.0f", as.numeric(time)),
+                                                    format="%H%M"), 12, 16), 
+                                  '%H:%M'), '%I:%M %p'),
+           datetime = as.POSIXct(paste(date, time), 
+                                 format="%Y-%m-%d %I:%M %p"),
+           water_temperature = as.numeric(water_temperature)) %>% 
+    dplyr::select(-date, -time) %>%
+    dplyr::filter(!is.na(datetime)) %>%
+    filter(!duplicated(datetime))
+  
+tides_new_xts <- xts(x = tides_new_df %>% dplyr::select(-datetime), order.by = tides_new_df$datetime)
 
 # Bind new to old
-tides %<>% bind_rows(tides_new) %>% distinct()
+tides <- rbind(tides, tides_new_xts)
+tides <- make.index.unique(tides,drop=TRUE)
 
 # export for packaging
 usethis::use_data(tides, overwrite = TRUE)
