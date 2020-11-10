@@ -6,12 +6,14 @@ library(lubridate)
 library(tsibble)
 library(stringr)
 library(magrittr)
+library(tidyr)
+library(xts)
 
 # load old data
 load("data/meteorology.rda")
 
-infile1  <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/whour_all_years.csv"
-# infile1 <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayWeather.csv"
+# infile1  <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/whour_all_years.csv"
+infile1 <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayWeather.csv"
 dt1 <-readr::read_csv(infile1, quote = '"', col_names = c(
   "STATION",
   "YEAR",
@@ -32,11 +34,11 @@ dt1 <-readr::read_csv(infile1, quote = '"', col_names = c(
   "PAR",
   "SOIL.T" ))
 
-meteo_new <- dt1 %>% 
+meteo_new_df <- dt1 %>% 
+  filter(STATION == "OYSM") %>% 
+  dplyr::select(-STATION) %>% 
   mutate_all(function(x)ifelse(x == ".", NA, x)) %>% 
   mutate_at(vars(PPT:SOIL.T), as.numeric) %>% 
-  mutate(STATION = as.factor(STATION)) %>% 
-  # filter(YEAR != ".", TIME != ".") %>%
   tidyr::unite("datetime",c("YEAR", "MONTH", "DAY"), sep = "-", remove = T) %>%
   mutate(TIME2 = format(strptime(substr(as.POSIXct(sprintf("%04.0f", as.numeric(TIME)),
                                                    format="%H%M"), 12, 16), 
@@ -45,14 +47,15 @@ meteo_new <- dt1 %>%
                                format="%Y-%m-%d %I:%M %p")) %>% 
   dplyr::select(-TIME, -TIME2) %>% 
   dplyr::filter(!is.na(datetime)) %>% 
-  dplyr::rename(station = STATION) %>% 
-  group_by(station) %>% 
-  filter(!duplicated(datetime)) %>% 
-  tsibble::as_tsibble(., key = station)
+  filter(!duplicated(datetime))
 
-names(meteo_new) <- str_to_lower(names(meteo_new))
+names(meteo_new_df) <- str_to_lower(names(meteo_new_df))
 
-meteorology %<>% bind_rows(meteo_new)   
+meteo_new <- xts(x = meteo_new_df %>% dplyr::select(-datetime), order.by = meteo_new_df$datetime)
+
+# bind new to old
+meteorology <- rbind(meteorology, meteo_new)
+meteorology <- make.index.unique(meteorology,drop=TRUE)
 
 # export for packaging
 usethis::use_data(meteorology, overwrite = TRUE)

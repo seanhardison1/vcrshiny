@@ -20,13 +20,6 @@ mod_01_var_select_ui <- function(id){
     ), 
     
     shiny::selectInput(
-      ns("station"),
-      "Select station",
-      choices = "",
-      selected = "OYST"
-    ),
-    
-    shiny::selectInput(
       ns("variable"),
       "Select variable",
       choices = "",
@@ -51,10 +44,7 @@ mod_01_var_select_ui <- function(id){
 #' @noRd 
 mod_01_var_select_server <- function(input, output, session) {
   ns <- session$ns
-  
-  tide_stations <-  c("OYST", "REDB", "HOG4")
-  
-  meteo_stations <-  c("OYSM", "HOG2", "PHCK2")
+
   
   var_choices <- reactive({
     
@@ -73,22 +63,15 @@ mod_01_var_select_server <- function(input, output, session) {
         "St. Dev. of Wind Direction (°)" = "std.wang",
         "Solar Radiation (kJ/m^2)" = "rad.sol",
         "PAR (mmol/m^2/hr)" = "par",
-        "Soil Temperature (°C)" = "soil.t"),
-          station_choices =
-              list(meteo_stations = meteo_stations)
-        )
-
+        "Soil Temperature (°C)" = "soil.t")
+      )
     } else if (input$dataset == "tides"){
       vars <-
         list(var_choices = 
              list(
         "Relative tide level (m)" = "relative_tide_level",
-        "Water temperature (°C)" = "water_temperature",
-        "Barometric pressure (mm)" = "barometric_pressure"
-      ),
-      station_choices =
-        list(tide_stations = tide_stations)
-      )
+        "Water temperature (°C)" = "water_temperature"#,
+      ))
     }
     
     vars
@@ -96,26 +79,18 @@ mod_01_var_select_server <- function(input, output, session) {
   })
 
   time_period <- reactive({
-    # browser()
-    tibble::tibble(end = max(eval(parse(text = paste0("vcrshiny::",
-                                              input$dataset)))$datetime)) %>%
+    tibble::tibble(end = as.POSIXct(xts::last(eval(parse(text = paste0("vcrshiny::",
+                                              input$dataset)))))) %>%
                    dplyr::mutate(start = end -  months(lubridate::month(6)),
                                  value = end -  months(lubridate::month(2)))
 
   })
+  
   observe({
     updateSelectInput(
       session, 
       "variable",
       choices = var_choices()$var_choices
-    )
-  })
-  
-  observe({
-    updateSelectInput(
-      session,
-      "station",
-      choices = var_choices()$station_choices
     )
   })
   
@@ -136,7 +111,6 @@ mod_01_var_select_server <- function(input, output, session) {
     list(
       period = reactive({ input$period }),
       dataset = reactive({ input$dataset }),
-      station = reactive({ input$station }),
       variable = reactive({ input$variable })
     )
   )

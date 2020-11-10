@@ -25,6 +25,7 @@ mod_02_ts_vis_server <- function(input,
                                  plot1vars) {
   ns <- session$ns
   
+  
   plot1_obj <- shiny::reactive({
     
     ylabel <- switch(plot1vars$variable(),
@@ -37,8 +38,8 @@ mod_02_ts_vis_server <- function(input,
                      "avg.ws" = "Avg. Wind Speed (m/s)",
                      "avg.wang" = "Avg. Wind Angle (°)",
                      "std.wang" = "St. Dev. of Wind Direction (°)",
-                     "rad.sol" = "Solar Radiation (kJ/m^2)",
-                     "par" = "PAR (mmol/m^2/hr)",
+                     "rad.sol" = "Solar Radiation (kJ/m<sup>2</sup>)",
+                     "par" = "PAR (mmol/m<sup>2</sup>/hr)",
                      "soil.t" = "Soil Temperature (°C)",
                      "relative_tide_level" ="Relative tide level (m)",
                      "water_temperature"  = "Water temperature (°C)",
@@ -46,30 +47,16 @@ mod_02_ts_vis_server <- function(input,
                      )
     
     if (plot1vars$variable() == "") return()
-  
-
+      
       df <- eval(parse(text = paste0("vcrshiny::", plot1vars$dataset())))
+ 
+      df <- df[paste0(plot1vars$period()[1],"/",plot1vars$period()[2])]
       
-      df <- df[df$datetime >= plot1vars$period()[1] &
-                 df$datetime < plot1vars$period()[2],]
-      
-
-      if (!plot1vars$station() %in% unique(df$station)) {
-        return()
-      } else {
-        df <- df[df$station == plot1vars$station(), ]
-      }    
-      # browser()
-      p <- df %>% 
-        tydygraphs::dygraph(!! rlang::sym(plot1vars$variable())) %>% 
-        
-        dygraphs::dySeries(paste(plot1vars$variable(), 
-                                 plot1vars$station(), 
-                                 sep = "_"), 
-                           label = paste(plot1vars$station(),"-", ylabel)) %>% 
-        
+      p <- dygraphs::dygraph(df[, plot1vars$variable()]) %>% 
+        dygraphs::dySeries(plot1vars$variable(), 
+                           label = ylabel) %>%
         dygraphs::dyAxis("y",label = ylabel) %>% 
-        dygraphs::dyOptions(connectSeparatedPoints = TRUE)
+        dygraphs::dyOptions(connectSeparatedPoints = TRUE) 
       
   })
   

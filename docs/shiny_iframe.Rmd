@@ -1,0 +1,11 @@
+---
+title: "shiny iframe proof of concept"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+<iframe src ="https://seanhardison.shinyapps.io/vcrshiny/" height=500px width=1000px />
