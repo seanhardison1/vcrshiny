@@ -4,6 +4,7 @@ library(tsibble)
 library(stringr)
 library(magrittr)
 library(xts)
+library(tidyr)
 
 # Porter, J., D. Krovetz, J. Spitler, J. Spitler, T. Williams and K. Overman. 2019. Tide Data for Hog Island (1991-), 
 # Redbank (1992-), Oyster (2007-) . Virginia Coast Reserve Long-Term Ecological Research Project Data Publication
