@@ -16,8 +16,8 @@ print(paste("Time of data pull is", Sys.time()))
 load("data/tides.rda")
 
 # Read in data from VCR database
-# fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/tidedata/VCRTide.csv"
-fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayTide.csv"
+fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/tidedata/VCRTide.csv"
+# fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayTide.csv"
 infile1 <- readr::read_csv(fname, 
                             col_names = c("station",
                                          "date",
