@@ -77,10 +77,12 @@ mod_01_var_select_server <- function(input, output, session) {
     vars
     
   })
-
   time_period <- reactive({
-    tibble::tibble(end = as.POSIXct(xts::last(eval(parse(text = paste0("vcrshiny::",
-                                              input$dataset)))))) %>%
+    
+    dft <- eval(parse(text = paste0("vcrshiny::",
+                                    input$dataset)))
+    print(zoo::index(dft[nrow(dft)]))
+    tibble::tibble(end = zoo::index(dft[nrow(dft)])) %>%
                    dplyr::mutate(start = end -  months(lubridate::month(6)),
                                  value = end -  months(lubridate::month(2)))
 
