@@ -3,17 +3,19 @@ A data package and shiny app for visualizing research data collected as part of 
 
 Read more about the program [here](https://www.vcrlter.virginia.edu/home2/).
 
-To access up-to-date tidal/meteorological data from the VCR:
+Installation:
+```
+devtools::install_github("seanhardison1/vcrshiny")
+```
 
+To access up-to-date tidal/meteorological data from the VCR:
 ```
 vcrshiny::tides
 vcrshiny::meteorology
 ```
 
 To run the dev version of this app locally:
-
 ```
-devtools::install_github("seanhardison1/vcrshiny")
 vcrshiny::run_app()
 ```
 Note: The app may not load on the first go - run the script again or click "Open in Browser" in the viewer pane to get around this.
