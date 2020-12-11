@@ -22,8 +22,10 @@ mod_01_var_select_ui <- function(id){
     shiny::selectInput(
       ns("variable"),
       "Select variable",
-      choices = "",
-      selected = ""
+      choices = list("Avg. Temperature (°C)" = "avg.t"),
+      # selected = list("Avg. Temperature (°C)" = "avg.t"),
+      selected = "",
+      multiple = TRUE
     ),
     
     shiny::sliderInput(
@@ -52,18 +54,18 @@ mod_01_var_select_server <- function(input, output, session) {
       vars <- 
         list(var_choices = 
              list(
-        "Precipitation (ml)" = "ppt",
-        "Avg. Temperature (°C)" = "avg.t",
-        "Min. Temperature (°C)" = "min.t",
-        "Avg. Relative Humidity (%)" = "avg.rh",
-        "Min. Relative Humidity (%)" = "min.rh",
-        "Max Relative Humidity (%)" = "max.rh",
-        "Avg. Wind Speed (m/s)" = "avg.ws",
-        "Avg. Wind Angle (°)" = "avg.wang",
-        "St. Dev. of Wind Direction (°)" = "std.wang",
-        "Solar Radiation (kJ/m^2)" = "rad.sol",
-        "PAR (mmol/m^2/hr)" = "par",
-        "Soil Temperature (°C)" = "soil.t")
+                "Precipitation (ml)" = "ppt",
+                "Avg. Temperature (°C)" = "avg.t",
+                "Min. Temperature (°C)" = "min.t",
+                "Avg. Relative Humidity (%)" = "avg.rh",
+                "Min. Relative Humidity (%)" = "min.rh",
+                "Max Relative Humidity (%)" = "max.rh",
+                "Avg. Wind Speed (m/s)" = "avg.ws",
+                "Avg. Wind Angle (°)" = "avg.wang",
+                "St. Dev. of Wind Direction (°)" = "std.wang",
+                "Solar Radiation (kJ/m^2)" = "rad.sol",
+                "PAR (mmol/m^2/hr)" = "par",
+                "Soil Temperature (°C)" = "soil.t")
       )
     } else if (input$dataset == "tides"){
       vars <-
@@ -72,11 +74,10 @@ mod_01_var_select_server <- function(input, output, session) {
         "Relative tide level (m)" = "relative_tide_level",
         "Water temperature (°C)" = "water_temperature"#,
       ))
-    }
-    
-    vars
-    
+    } 
   })
+  
+  
   time_period <- reactive({
     
     dft <- eval(parse(text = paste0("vcrshiny::",
@@ -88,12 +89,21 @@ mod_01_var_select_server <- function(input, output, session) {
 
   })
   
+  
+  
   observe({
     updateSelectInput(
       session, 
       "variable",
-      choices = var_choices()$var_choices
+      choices = var_choices()$var_choices,
+      selected = var_choices()$var_choices[1]
     )
+  })
+  
+  observeEvent(input$variable, {
+    if (length(input$variable) == 2){
+      shinyjs::disable("variable")
+    }
   })
   
   observe({

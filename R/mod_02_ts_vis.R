@@ -28,35 +28,61 @@ mod_02_ts_vis_server <- function(input,
   
   plot1_obj <- shiny::reactive({
     
-    ylabel <- switch(plot1vars$variable(),
-                     "ppt" = "Precipitation (ml)",
-                     "avg.t" = "Avg. Temperature (°C)",
-                     "min.t" = "Min. Temperature (°C)",
-                     "avg.rh" = "Avg. Relative Humidity (%)",
-                     "min.rh" = "Min. Relative Humidity (%)",
-                     "max.rh" = "Max Relative Humidity (%)",
-                     "avg.ws" = "Avg. Wind Speed (m/s)",
-                     "avg.wang" = "Avg. Wind Angle (°)",
-                     "std.wang" = "St. Dev. of Wind Direction (°)",
-                     "rad.sol" = "Solar Radiation (kJ/m<sup>2</sup>)",
-                     "par" = "PAR (mmol/m<sup>2</sup>/hr)",
-                     "soil.t" = "Soil Temperature (°C)",
-                     "relative_tide_level" ="Relative tide level (m)",
-                     "water_temperature"  = "Water temperature (°C)",
-                     "barometric_pressure" = "Barometric pressure (mm)"
-                     )
-    
-    if (plot1vars$variable() == "") return()
+    if(!is.null(plot1vars$variable())){
+      # print(plot1vars)
       
-      df <- eval(parse(text = paste0("vcrshiny::", plot1vars$dataset())))
- 
-      df <- df[paste0(plot1vars$period()[1],"/",plot1vars$period()[2])]
+    ylabel <- NULL 
+    for (i in 1:length(plot1vars$variable())){
+      ylabel[i] <- switch(plot1vars$variable()[i],
+                       "ppt" = "Precipitation (ml)",
+                       "avg.t" = "Avg. Temperature (°C)",
+                       "min.t" = "Min. Temperature (°C)",
+                       "avg.rh" = "Avg. Relative Humidity (%)",
+                       "min.rh" = "Min. Relative Humidity (%)",
+                       "max.rh" = "Max Relative Humidity (%)",
+                       "avg.ws" = "Avg. Wind Speed (m/s)",
+                       "avg.wang" = "Avg. Wind Angle (°)",
+                       "std.wang" = "St. Dev. of Wind Direction (°)",
+                       "rad.sol" = "Solar Radiation (kJ/m<sup>2</sup>)",
+                       "par" = "PAR (mmol/m<sup>2</sup>/hr)",
+                       "soil.t" = "Soil Temperature (°C)",
+                       "relative_tide_level" ="Relative tide level (m)",
+                       "water_temperature"  = "Water temperature (°C)",
+                       "barometric_pressure" = "Barometric pressure (mm)"
+      )
+    }
+    
+    # select data set and period of interest
+    df <- eval(parse(text = paste0("vcrshiny::", plot1vars$dataset())))
+    df <- df[paste0(plot1vars$period()[1],"/",plot1vars$period()[2])]
+    # browser()
+
+    # create a plot from one or two variables  
+    if (length(plot1vars$variable()) == 1){
       
       p <- dygraphs::dygraph(df[, plot1vars$variable()]) %>% 
         dygraphs::dySeries(plot1vars$variable(), 
                            label = ylabel) %>%
         dygraphs::dyAxis("y",label = ylabel) %>% 
         dygraphs::dyOptions(connectSeparatedPoints = TRUE) 
+      
+    } else if (length(plot1vars$variable()) == 2) {
+      p <- dygraphs::dygraph(df[, plot1vars$variable()]) %>% 
+        dygraphs::dySeries(plot1vars$variable()[1], 
+                           label = ylabel[1]) %>%
+        dygraphs::dyAxis("y",label = ylabel[1]) %>%
+        
+        dygraphs::dySeries(plot1vars$variable()[2], axis = 'y2') %>% 
+        dygraphs::dyAxis("y2",label = ylabel[2]) %>% 
+        dygraphs::dyOptions(connectSeparatedPoints = TRUE) 
+    } 
+      
+    
+    # if no choices, return an empty plot
+    } else {
+      return()
+    }
+
       
   })
   
