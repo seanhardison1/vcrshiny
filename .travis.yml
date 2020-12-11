@@ -13,3 +13,7 @@ deploy:
   target_branch: master        # Add this line - To push into GitHub master branch
   on:
     branch: staging
+addons:
+  apt:
+    packages:
+      - libgit2-dev
