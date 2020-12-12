@@ -29,9 +29,8 @@ mod_02_ts_vis_server <- function(input,
   plot1_obj <- shiny::reactive({
     
     if(!is.null(plot1vars$variable())){
-      # print(plot1vars$agg_step())
-
-    
+      # print(plot1vars)
+      
     ylabel <- NULL 
     for (i in 1:length(plot1vars$variable())){
       ylabel[i] <- switch(plot1vars$variable()[i],
@@ -56,19 +55,7 @@ mod_02_ts_vis_server <- function(input,
     # select data set and period of interest
     df <- eval(parse(text = paste0("vcrshiny::", plot1vars$dataset())))
     df <- df[paste0(plot1vars$period()[1],"/",plot1vars$period()[2])]
-
-    # aggregate data if selected
-    if (plot1vars$agg_step() != "Six minutes"){
-      agg_step <-
-        switch(plot1vars$agg_step(),
-               "One hour" = "60",
-               "One day" = "1440",
-               "One week" = "10080")
-      
-      df <- xts::period.apply(df[, plot1vars$variable()],
-                              INDEX = xts::endpoints(df, "mins", k=as.numeric(agg_step)),
-                              FUN = mean)
-    }
+    # browser()
 
     # create a plot from one or two variables  
     if (length(plot1vars$variable()) == 1){

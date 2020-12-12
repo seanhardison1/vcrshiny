@@ -36,14 +36,6 @@ mod_01_var_select_ui <- function(id){
       value = c(as.Date("2019-09-05"),
                 as.Date("2019-05-05")),
       timeFormat="%b-%Y"
-    ),
-    
-    shinyWidgets::radioGroupButtons(
-      ns("agg_step"), 
-      label = "Aggregate data", 
-      choices = c("Six minutes","One hour", "One day", "One week"),
-      selected = "Six minutes",
-      size = "xs"
     )
   )
 }
@@ -114,7 +106,6 @@ mod_01_var_select_server <- function(input, output, session) {
     }
   })
   
-  
   observe({
     updateSliderInput(
       session,
@@ -132,8 +123,7 @@ mod_01_var_select_server <- function(input, output, session) {
     list(
       period = reactive({ input$period }),
       dataset = reactive({ input$dataset }),
-      variable = reactive({ input$variable }),
-      agg_step = reactive({ input$agg_step })
+      variable = reactive({ input$variable })
     )
   )
 }
