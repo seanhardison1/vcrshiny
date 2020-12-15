@@ -7,6 +7,25 @@
 #' @noRd
 #' 
 #' @importFrom shiny NS tagList 
+#' 
+
+# A list of variable names to select from
+# var_choices <- list(`Tides` = list("Relative tide level (m)" = "relative_tide_level",
+#                                     "Water temperature (°C)" = "water_temperature"),
+#                      
+#                      `Meteorology` = list("Precipitation (ml)" = "ppt",
+#                                           "Avg. Temperature (°C)" = "avg.t",
+#                                           "Min. Temperature (°C)" = "min.t",
+#                                           "Avg. Relative Humidity (%)" = "avg.rh",
+#                                           "Min. Relative Humidity (%)" = "min.rh",
+#                                           "Max Relative Humidity (%)" = "max.rh",
+#                                           "Avg. Wind Speed (m/s)" = "avg.ws",
+#                                           "Avg. Wind Angle (°)" = "avg.wang",
+#                                           "St. Dev. of Wind Direction (°)" = "std.wang",
+#                                           "Solar Radiation (kJ/m^2)" = "rad.sol",
+#                                           "PAR (mmol/m^2/hr)" = "par",
+#                                           "Soil Temperature (°C)" = "soil.t"))
+
 mod_01_var_select_ui <- function(id){
   ns <- NS(id)
   
@@ -17,8 +36,8 @@ mod_01_var_select_ui <- function(id){
       choices = list("Meteorology" = "meteorology",
                      "Tides & temperature" = "tides"),
       selected = "tides"
-    ), 
-    
+    ),
+
     shiny::selectInput(
       ns("variable"),
       "Select variable",
@@ -27,6 +46,14 @@ mod_01_var_select_ui <- function(id){
       selected = "",
       multiple = TRUE
     ),
+
+    # shiny::selectInput(
+    #   ns("dataset"),
+    #   "Select data",
+    #   choices = var_choices,
+    #   selected = "Tides",
+    #   multiple = T
+    # ),
     
     shiny::sliderInput(
       ns("period"),
@@ -54,10 +81,10 @@ mod_01_var_select_ui <- function(id){
 #' @noRd 
 mod_01_var_select_server <- function(input, output, session) {
   ns <- session$ns
-
+  # browser()
   
   var_choices <- reactive({
-    
+    print(input$dataset)
     if (input$dataset == "meteorology"){
       vars <- 
         list(var_choices = 

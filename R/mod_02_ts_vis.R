@@ -6,6 +6,9 @@
 #'
 #' @noRd
 #' @importFrom shiny NS tagList 
+#' 
+#' 
+
 mod_02_ts_vis_ui <-function(id) {
   ns <- NS(id)
   
@@ -25,13 +28,15 @@ mod_02_ts_vis_server <- function(input,
                                  plot1vars) {
   ns <- session$ns
   
-  
+  # Travis CI is updated once a day at around 3 pm EST. 
+  # This step sources the latest data when the app is initialized to side-step the need to the package
+  source(here::here("data-raw/real_time_query.R"))
+
   plot1_obj <- shiny::reactive({
     
     if(!is.null(plot1vars$variable())){
       # print(plot1vars$agg_step())
 
-    
     ylabel <- NULL 
     for (i in 1:length(plot1vars$variable())){
       ylabel[i] <- switch(plot1vars$variable()[i],
@@ -55,8 +60,24 @@ mod_02_ts_vis_server <- function(input,
     
     # select data set and period of interest
     df <- eval(parse(text = paste0("vcrshiny::", plot1vars$dataset())))
+    
+    # bind in data queried after Travis build
+    if (plot1vars$dataset() == "tides"){
+      df <- rbind(df, tides_new_xts_rt)
+      print(tail(df))
+      # print(tail(tides_new_xts_rt))
+    } else if (plot1vars$dataset() == "meteorology"){
+      df <- rbind(df, meteo_new_xts_rt)
+      print(tail(df))
+      # print(tail(meteo_new_xts_rt))
+    }
+    
+    # remove duplicates if they exist
+    df <- make.index.unique(df,drop=TRUE)
+    
+    # trim to selected time range
     df <- df[paste0(plot1vars$period()[1],"/",plot1vars$period()[2])]
-
+    print(tail(df))
     # aggregate data if selected
     if (plot1vars$agg_step() != "Six minutes"){
       agg_step <-
@@ -64,15 +85,14 @@ mod_02_ts_vis_server <- function(input,
                "One hour" = "60",
                "One day" = "1440",
                "One week" = "10080")
-      
       df <- xts::period.apply(df[, plot1vars$variable()],
                               INDEX = xts::endpoints(df, "mins", k=as.numeric(agg_step)),
                               FUN = mean)
     }
-
+    
     # create a plot from one or two variables  
     if (length(plot1vars$variable()) == 1){
-      
+      print(tail(df))
       p <- dygraphs::dygraph(df[, plot1vars$variable()]) %>% 
         dygraphs::dySeries(plot1vars$variable(), 
                            label = ylabel) %>%
