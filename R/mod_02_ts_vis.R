@@ -30,7 +30,7 @@ mod_02_ts_vis_server <- function(input,
   
   # Travis CI is updated once a day at around 3 pm EST. 
   # This step sources the latest data when the app is initialized to side-step the need to the package
-  source(here::here("data-raw/real_time_query.R"))
+  new_data <- vcrshiny:::real_time_query()
   
   plot1_obj <- shiny::reactive({
     
@@ -63,21 +63,21 @@ mod_02_ts_vis_server <- function(input,
       
       # bind in data queried after Travis build
       if (plot1vars$dataset() == "tides"){
-        df <- rbind(df, tides_new_xts_rt)
+        df <- rbind(df, new_data$tides_new)
         print(tail(df))
         # print(tail(tides_new_xts_rt))
       } else if (plot1vars$dataset() == "meteorology"){
-        df <- rbind(df, meteo_new_xts_rt)
+        df <- rbind(df, new_data$meteo_new)
         print(tail(df))
         # print(tail(meteo_new_xts_rt))
       }
       
       # remove duplicates if they exist
-      df <- make.index.unique(df,drop=TRUE)
+      df <- xts::make.index.unique(df,drop=TRUE)
       
       # trim to selected time range
-      df <- df[paste0(plot1vars$period()[1],"/",plot1vars$period()[2])]
-      print(tail(df))
+      df2 <- df[paste0(plot1vars$period()[1],"/",plot1vars$period()[2])]
+      print(tail(df2))
       # aggregate data if selected
       if (plot1vars$agg_step() != "Six minutes"){
         agg_step <-
@@ -92,15 +92,15 @@ mod_02_ts_vis_server <- function(input,
       
       # create a plot from one or two variables  
       if (length(plot1vars$variable()) == 1){
-        print(tail(df))
-        p <- dygraphs::dygraph(df[, plot1vars$variable()]) %>% 
+        print(tail(df2))
+        p <- dygraphs::dygraph(df2[, plot1vars$variable()]) %>% 
           dygraphs::dySeries(plot1vars$variable(), 
                              label = ylabel) %>%
           dygraphs::dyAxis("y",label = ylabel) %>% 
           dygraphs::dyOptions(connectSeparatedPoints = TRUE) 
         
       } else if (length(plot1vars$variable()) == 2) {
-        p <- dygraphs::dygraph(df[, plot1vars$variable()]) %>% 
+        p <- dygraphs::dygraph(df2[, plot1vars$variable()]) %>% 
           dygraphs::dySeries(plot1vars$variable()[1], 
                              label = ylabel[1]) %>%
           dygraphs::dyAxis("y",label = ylabel[1]) %>%

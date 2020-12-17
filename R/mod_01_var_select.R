@@ -118,10 +118,10 @@ mod_01_var_select_server <- function(input, output, session) {
     dft <- eval(parse(text = paste0("vcrshiny::",
                                     input$dataset)))
     print(zoo::index(dft[nrow(dft)]))
-    tibble::tibble(end = zoo::index(dft[nrow(dft)])) %>%
+    # tibble::tibble(end = zoo::index(dft[nrow(dft)])) %>%
+    tibble::tibble(end = Sys.time()) %>%
       dplyr::mutate(start = end -  months(lubridate::month(6)),
                     value = end -  months(lubridate::month(2)))
-    
   })
   
   
