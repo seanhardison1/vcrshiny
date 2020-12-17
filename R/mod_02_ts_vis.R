@@ -80,13 +80,14 @@ mod_02_ts_vis_server <- function(input,
       print(tail(df2))
       # aggregate data if selected
       if (plot1vars$agg_step() != "Six minutes"){
+        # browser()
         agg_step <-
           switch(plot1vars$agg_step(),
                  "One hour" = "60",
                  "One day" = "1440",
                  "One week" = "10080")
-        df <- xts::period.apply(df[, plot1vars$variable()],
-                                INDEX = xts::endpoints(df, "mins", k=as.numeric(agg_step)),
+        df2 <- xts::period.apply(df2[, plot1vars$variable()],
+                                INDEX = xts::endpoints(df2, "mins", k=as.numeric(agg_step)),
                                 FUN = mean)
       }
       
