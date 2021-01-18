@@ -58,18 +58,18 @@ mod_01_var_select_ui <- function(id){
     shiny::sliderInput(
       ns("period"),
       "Select time period",
-      min = as.Date("2019-05-05"),
-      max = as.Date("2019-09-05"),
-      value = c(as.Date("2019-09-05"),
-                as.Date("2019-05-05")),
+      min = Sys.Date() - lubridate::years(10),
+      max = Sys.Date(),
+      value = c(Sys.Date() - months(lubridate::month(12)),
+                Sys.Date()),
       timeFormat="%b-%Y"
     ),
     
     shinyWidgets::radioGroupButtons(
       ns("agg_step"), 
       label = "Aggregate data", 
-      choices = c("Six minutes","One hour", "One day", "One week"),
-      selected = "Six minutes",
+      choices = c("30 minutes", "One day", "One week","One month"),
+      selected = "30 minutes",
       size = "xs"
     )
   )
@@ -120,7 +120,7 @@ mod_01_var_select_server <- function(input, output, session) {
     print(zoo::index(dft[nrow(dft)]))
     # tibble::tibble(end = zoo::index(dft[nrow(dft)])) %>%
     tibble::tibble(end = Sys.time()) %>%
-      dplyr::mutate(start = end -  months(lubridate::month(6)),
+      dplyr::mutate(start = end -  months(lubridate::month(12)),
                     value = end -  months(lubridate::month(2)))
   })
   
@@ -146,8 +146,8 @@ mod_01_var_select_server <- function(input, output, session) {
     updateSliderInput(
       session,
       "period",
-      min = time_period()$start,
-      max = time_period()$end,
+      # min = time_period()$start,
+      # max = time_period()$end,
       value = c(time_period()$value,
                 time_period()$end),
       timeFormat="%b-%Y",
