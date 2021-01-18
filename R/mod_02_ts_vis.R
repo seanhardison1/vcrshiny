@@ -30,7 +30,16 @@ mod_02_ts_vis_server <- function(input,
   
   # Travis CI is updated once a day at around 3 pm EST. 
   # This step sources the latest data when the app is initialized to side-step the need to the package
-  new_data <- vcrshiny:::real_time_query()
+  
+  new_data <- tryCatch(
+    {
+      vcrshiny:::real_time_query()
+    }, error = function(cond){
+      message("Unable to retrieve new data. Check to see if server is down.")
+      
+      return(NA)
+      }
+    )
   
   plot1_obj <- shiny::reactive({
     
@@ -62,15 +71,18 @@ mod_02_ts_vis_server <- function(input,
       df <- eval(parse(text = paste0("vcrshiny::", plot1vars$dataset())))
       
       # bind in data queried after Travis build
-      if (plot1vars$dataset() == "tides"){
-        df <- rbind(df, new_data$tides_new)
-        print(tail(df))
-        # print(tail(tides_new_xts_rt))
-      } else if (plot1vars$dataset() == "meteorology"){
-        df <- rbind(df, new_data$meteo_new)
-        print(tail(df))
-        # print(tail(meteo_new_xts_rt))
+      if (!is.na(new_data)){
+        if (plot1vars$dataset() == "tides"){
+          df <- rbind(df, new_data$tides_new)
+          print(tail(df))
+          # print(tail(tides_new_xts_rt))
+        } else if (plot1vars$dataset() == "meteorology"){
+          df <- rbind(df, new_data$meteo_new)
+          print(tail(df))
+          # print(tail(meteo_new_xts_rt))
+        }
       }
+
       
       # remove duplicates if they exist
       df <- xts::make.index.unique(df,drop=TRUE)
@@ -79,16 +91,16 @@ mod_02_ts_vis_server <- function(input,
       df2 <- df[paste0(plot1vars$period()[1],"/",plot1vars$period()[2])]
       print(tail(df2))
       # aggregate data if selected
-      if (plot1vars$agg_step() != "Six minutes"){
+      if (plot1vars$agg_step() != "30 minutes"){
         # browser()
         agg_step <-
           switch(plot1vars$agg_step(),
-                 "One hour" = "60",
                  "One day" = "1440",
-                 "One week" = "10080")
+                 "One week" = "10080",
+                 "One month" = "43800")
         df2 <- xts::period.apply(df2[, plot1vars$variable()],
                                 INDEX = xts::endpoints(df2, "mins", k=as.numeric(agg_step)),
-                                FUN = mean)
+                                FUN = function(x) mean(x, na.rm = T))
       }
       
       # create a plot from one or two variables  
@@ -98,7 +110,7 @@ mod_02_ts_vis_server <- function(input,
           dygraphs::dySeries(plot1vars$variable(), 
                              label = ylabel) %>%
           dygraphs::dyAxis("y",label = ylabel) %>% 
-          dygraphs::dyOptions(connectSeparatedPoints = TRUE) 
+          dygraphs::dyOptions(connectSeparatedPoints = F) 
         
       } else if (length(plot1vars$variable()) == 2) {
         p <- dygraphs::dygraph(df2[, plot1vars$variable()]) %>% 
@@ -108,7 +120,7 @@ mod_02_ts_vis_server <- function(input,
           
           dygraphs::dySeries(plot1vars$variable()[2], axis = 'y2') %>% 
           dygraphs::dyAxis("y2",label = ylabel[2]) %>% 
-          dygraphs::dyOptions(connectSeparatedPoints = TRUE) 
+          dygraphs::dyOptions(connectSeparatedPoints = F) 
       } 
       
       
