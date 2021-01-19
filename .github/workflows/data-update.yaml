@@ -55,6 +55,7 @@ jobs:
         run: |
           source('data-raw/process_tides.R')
           source('data-raw/process_meteorology.R')
+          source('app.R')
         shell: Rscript {0}
         
       - name: Commit and push new data
