@@ -46,7 +46,9 @@ tides_new_df <-
     filter(!duplicated(datetime))
   
 tides_new_xts <- xts(x = tides_new_df %>% dplyr::select(-datetime), order.by = tides_new_df$datetime)
-
+tides_new_xts <- xts::period.apply(tides_new_xts,
+                                INDEX = xts::endpoints(tides_new_xts, "mins", k=30),
+                                FUN = mean)
 # Bind new to old
 tides <- rbind(tides, tides_new_xts)
 tides <- make.index.unique(tides,drop=TRUE)
