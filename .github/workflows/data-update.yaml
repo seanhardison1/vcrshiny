@@ -1,9 +1,9 @@
 on:
   schedule:
-    # * is a special character in YAML so you have to quote this string
-    - cron:  '*/60 * * * *'
+  # * is a special character in YAML so you have to quote this string
+  - cron:  '*/60 * * * *'
       branches:
-      - master
+      - staging
       
 name: data-update
 
