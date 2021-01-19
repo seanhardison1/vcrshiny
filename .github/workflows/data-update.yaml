@@ -2,8 +2,6 @@ on:
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '*/60 * * * *'
-      branches:
-      - master
       
 name: data-update
 
@@ -58,3 +56,8 @@ jobs:
           source('data-raw/process_tides.R')
           source('data-raw/process_meteorology.R')
         shell: Rscript {0}
+        
+      - name: Commit and push new data
+        run: |
+          git commit . -m 'VCR data query'
+          git push https://${{github.actor}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git HEAD:${{ github.ref }}
