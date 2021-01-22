@@ -2,6 +2,7 @@ on:
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '0 */4 * * *'
+
       
 name: data-update
 
@@ -53,11 +54,11 @@ jobs:
         
       - name: Query VCR server
         run: |
-          source('data-raw/process_tides.R')
-          source('data-raw/process_meteorology.R')
+          source('data-raw/process_physical_data.R')
         shell: Rscript {0}
-        
+
       - name: Commit and push new data
         run: |
           git commit . -m 'VCR data query'
           git push https://${{github.actor}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git HEAD:${{ github.ref }}
+
