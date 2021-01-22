@@ -10,6 +10,7 @@ app_ui <- function(request){
   
   bootstrapPage(theme = shinythemes::shinytheme("simplex"),#theme = "styles.css",
                 shinyjs::useShinyjs(),
+
                 # shinyFeedback::useShinyFeedback(),
                 # navbarPage(theme = shinythemes::shinytheme("simplex"), collapsible = TRUE,
                 #            "VCR Data Explorer", id="nav",
@@ -70,6 +71,7 @@ app_ui <- function(request){
                 # Tides and meteorological data------------------------------------------------
                 tabPanel("Tides and Meteorology",
                         shinyWidgets::chooseSliderSkin("Flat", color = "#112446"),
+
                          shiny::fluidRow(
                            shiny::column(
                              width = 3,

@@ -27,12 +27,13 @@ mod_02_ts_vis_server <- function(input,
                                  session, 
                                  plot1vars) {
   ns <- session$ns
+
   
   plot1_obj <- shiny::reactive({
+
     # browser()
     if(!is.null(plot1vars$variable())){
-      # print(plot1vars$agg_step())
-      
+
       ylabel <- NULL 
       for (i in 1:length(plot1vars$variable())){
         ylabel[i] <- switch(plot1vars$variable()[i],
@@ -50,17 +51,18 @@ mod_02_ts_vis_server <- function(input,
       
       # aggregate data if selected
       if (plot1vars$agg_step() != "One hour"){
+
         # browser()
         agg_step <-
           switch(plot1vars$agg_step(),
                  "One day" = "1440",
                  "One week" = "10080",
                  "One month" = "43800")
+
           df2 <- xts::period.apply(df2,
                                    INDEX = xts::endpoints(df2, "mins", k = as.numeric(agg_step)),
                                    FUN =  mean, na.rm = T)
         }
-      
       
       # create a plot from one or two variables  
       if (length(plot1vars$variable()) == 1){
@@ -81,8 +83,6 @@ mod_02_ts_vis_server <- function(input,
           dygraphs::dyAxis("y2",label = ylabel[2]) %>% 
           dygraphs::dyOptions(connectSeparatedPoints = F) 
       } 
-      
-      
       # if no choices, return an empty plot
     } else {
       return()
