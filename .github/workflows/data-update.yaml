@@ -55,6 +55,5 @@ jobs:
         
       - name: Query VCR server
         run: |
-          source('data-raw/process_tides.R')
-          source('data-raw/process_meteorology.R')
+          source('data-raw/process_physical_data.R')
         shell: Rscript {0}

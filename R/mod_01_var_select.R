@@ -9,51 +9,21 @@
 #' @importFrom shiny NS tagList 
 #' 
 
-# A list of variable names to select from
-var_choices <- list(`Tides` = list("Relative tide level (m)" = "relative_tide_level",
-                                   "Water temperature (°C)" = "water_temperature"),
-                    
-                    `Meteorology` = list("Precipitation (ml)" = "ppt",
-                                         "Avg. Temperature (°C)" = "avg.t",
-                                         "Min. Temperature (°C)" = "min.t",
-                                         "Avg. Relative Humidity (%)" = "avg.rh",
-                                         "Min. Relative Humidity (%)" = "min.rh",
-                                         "Max Relative Humidity (%)" = "max.rh",
-                                         "Avg. Wind Speed (m/s)" = "avg.ws",
-                                         "Avg. Wind Angle (°)" = "avg.wang",
-                                         "St. Dev. of Wind Direction (°)" = "std.wang",
-                                         "Solar Radiation (kJ/m^2)" = "rad.sol",
-                                         "PAR (mmol/m^2/hr)" = "par",
-                                         "Soil Temperature (°C)" = "soil.t"))
-
 mod_01_var_select_ui <- function(id){
   ns <- NS(id)
   
   tagList(
     shiny::selectInput(
-      ns("dataset"),
-      "Select data",
-      choices = list("Meteorology" = "meteorology",
-                     "Tides & temperature" = "tides"),
-      selected = "tides"
-    ),
-    
-    shiny::selectInput(
       ns("variable"),
       "Select variable",
-      choices = list("Avg. Temperature (°C)" = "avg.t"),
-      # selected = list("Avg. Temperature (°C)" = "avg.t"),
-      selected = "",
+      choices = list("Precipitation (ml)" = "ppt",
+                      "Avg. air temperature (°C)" = "avg.t",
+                      "Avg. wind speed (m/s)" = "avg.ws",
+                      "Relative tide level (m)" = "relative_tide_level",
+                      "Water temperature (°C)" = "water_temperature"),
+      selected = list("Avg. air Temperature (°C)" = "avg.t"),
       multiple = TRUE
     ),
-    
-    # shiny::selectInput(
-    #   ns("dataset"),
-    #   "Select data",
-    #   choices = var_choices,
-    #   selected = "Tides",
-    #   multiple = T
-    # ),
     
     shiny::sliderInput(
       ns("period"),
@@ -68,11 +38,14 @@ mod_01_var_select_ui <- function(id){
     shinyWidgets::radioGroupButtons(
       ns("agg_step"), 
       label = "Aggregate data", 
-      choices = c("30 minutes", "One day", "One week","One month"),
-      selected = "30 minutes",
+      choices = c("One hour","One day", "One week","One month"),
+      selected = "One hour",
       size = "xs"
-    )
+    ),
+    
+    textOutput(ns("text"))
   )
+  
 }
 
 #' 01_var_select Server Function
@@ -81,85 +54,56 @@ mod_01_var_select_ui <- function(id){
 #' @noRd 
 mod_01_var_select_server <- function(input, output, session) {
   ns <- session$ns
-  # browser()
-  
-  var_choices <- reactive({
-    print(input$dataset)
-    if (input$dataset == "meteorology"){
-      vars <- 
-        list(var_choices = 
-               list(
-                 "Precipitation (ml)" = "ppt",
-                 "Avg. Temperature (°C)" = "avg.t",
-                 "Min. Temperature (°C)" = "min.t",
-                 "Avg. Relative Humidity (%)" = "avg.rh",
-                 "Min. Relative Humidity (%)" = "min.rh",
-                 "Max Relative Humidity (%)" = "max.rh",
-                 "Avg. Wind Speed (m/s)" = "avg.ws",
-                 "Avg. Wind Angle (°)" = "avg.wang",
-                 "St. Dev. of Wind Direction (°)" = "std.wang",
-                 "Solar Radiation (kJ/m^2)" = "rad.sol",
-                 "PAR (mmol/m^2/hr)" = "par",
-                 "Soil Temperature (°C)" = "soil.t")
-        )
-    } else if (input$dataset == "tides"){
-      vars <-
-        list(var_choices = 
-               list(
-                 "Relative tide level (m)" = "relative_tide_level",
-                 "Water temperature (°C)" = "water_temperature"#,
-               ))
-    } 
-  })
-  
-  
-  time_period <- reactive({
-    
-    dft <- eval(parse(text = paste0("vcrshiny::",
-                                    input$dataset)))
-    print(zoo::index(dft[nrow(dft)]))
-    # tibble::tibble(end = zoo::index(dft[nrow(dft)])) %>%
-    tibble::tibble(end = Sys.time()) %>%
-      dplyr::mutate(start = end -  months(lubridate::month(12)),
-                    value = end -  months(lubridate::month(2)))
-  })
   
   
   
-  observe({
-    updateSelectInput(
-      session, 
-      "variable",
-      choices = var_choices()$var_choices,
-      selected = var_choices()$var_choices[1]
-    )
-  })
+  output$text <- renderText({ 
+      text <- vector()
+      for (i in 1:length(input$variable)) {
+        text[i] <- switch(input$variable[i],
+                          "ppt" = "precipitation (ml)",
+                          "avg.t" = "air temperature (°C)",
+                          "avg.ws" = "wind Speed (m/s)",
+                          "relative_tide_level" ="relative tide level (m)",
+                          "water_temperature"  = "water temperature (°C)")
+      }
+      # browser()
+      paste0("You've selected ",ifelse(length(text) > 1, paste(text[1],text[2],sep = " and "),text),". ",
+                                       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus suscipit non justo 
+                                       id semper. Phasellus eu dui arcu. Integer ac ultrices risus, non maximus arcu. Donec
+                                       ullamcorper rhoncus tortor, vitae vehicula ex elementum consequat. Pellentesque at 
+                                       eleifend tellus. Nam sed rutrum odio, in tincidunt orci. Duis et condimentum sem, 
+                                       ac sollicitudin justo. Nunc scelerisque non libero sed congue.") 
+    })
+  
+  # time_period <- 
+  #   tibble::tibble(end = Sys.time()) %>%
+  #     dplyr::mutate(start = end -  months(lubridate::month(12)),
+  #                   value = end -  months(lubridate::month(2)))
+  # 
+  # observe({
+  #   updateSliderInput(
+  #     session,
+  #     "period",
+  #     value = c(time_period$value,
+  #               time_period$end),
+  #     timeFormat="%b-%Y",
+  #     step = 7
+  #   )
+  # })
   
   observeEvent(input$variable, {
-    if (length(input$variable) == 2){
-      shinyjs::disable("variable")
-    }
-  })
-  
-  
-  observe({
-    updateSliderInput(
-      session,
-      "period",
-      # min = time_period()$start,
-      # max = time_period()$end,
-      value = c(time_period()$value,
-                time_period()$end),
-      timeFormat="%b-%Y",
-      step = 7
-    )
+    if (length(input$variable) > 2) {
+      shinyjs::alert("Only two variables may be displayed at one time.")
+      shinyjs::reset("variable")
+    } 
   })
   
   return(
     list(
       period = reactive({ input$period }),
-      dataset = reactive({ input$dataset }),
       variable = reactive({ input$variable }),
+      dataset = reactive({ input$dataset }),
       agg_step = reactive({ input$agg_step })
     )
   )
