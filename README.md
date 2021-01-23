@@ -8,14 +8,12 @@ Installation:
 devtools::install_github("seanhardison1/vcrshiny")
 ```
 
-To access up-to-date tidal/meteorological data from the VCR:
+To access up-to-date time series of air and water temperatures, precipitation, wind speeds, and tides from the VCR:
 ```
-vcrshiny::tides
-vcrshiny::meteorology
+vcrshiny::vcr_phys_vars
 ```
 
 To run the dev version of this app locally:
 ```
 vcrshiny::run_app()
 ```
-Note: The app may not load on the first go - run the script again or click "Open in Browser" in the viewer pane to get around this.
