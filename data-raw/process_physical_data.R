@@ -12,11 +12,8 @@ library(tidyr)
 
 print(paste("Time of data pull is", Sys.time()))
 
-#load old data
-load("data/tides.rda")
-
 # trigger processing of long-term mean calculation
-get_hourly_ltm <- T
+get_hourly_ltm <- F
 
 # Read in data from VCR database
 fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/tidedata/VCRTide.csv"
@@ -198,7 +195,7 @@ if (get_hourly_ltm){
   load("data/meteo_hourly_ltm.rdata")
 }
 
-# join tidal data with ltm data
+# join meteo data with ltm data
 meteo_new_df <- 
   meteo_hourly_ltm %>% 
   ungroup() %>% 
