@@ -61,8 +61,8 @@ tides_new_df <-
              m = month(datetime),
              d = day(datetime),
              h = hour(datetime)) %>% 
-    dplyr::summarise(relative_tide_level = mean(relative_tide_level, na.rm = T),
-                     water_temperature = mean(water_temperature, na.rm = T)) %>% 
+    dplyr::summarise(relative_tide_level = mean(relative_tide_level, na.rm = T) * 3.28084,
+                     water_temperature = (mean(water_temperature, na.rm = T) * 9/5) + 32) %>% 
   
     # convert back to datetime
     mutate(date = as.Date(paste(y,m,d, sep = "-")),
@@ -158,7 +158,10 @@ meteo_new_df <- dt1 %>%
   tsibble(index = datetime) %>% 
   fill_gaps(.full  = TRUE) %>% 
   as_tibble() %>% 
-  dplyr::select(datetime, PPT, AVG.T, AVG.WS)
+  dplyr::select(datetime, PPT, AVG.T, AVG.WS) %>% 
+  dplyr::mutate(AVG.T = (AVG.T * 9/5) + 32,
+                AVG.WS = AVG.WS * 3.28084,
+                PPT = PPT/16.387)
 
 names(meteo_new_df) <- str_to_lower(names(meteo_new_df))
 

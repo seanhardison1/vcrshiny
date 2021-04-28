@@ -9,23 +9,6 @@
 #' @importFrom shiny NS tagList 
 #' 
 
-# A list of variable names to select from
-var_choices <- list(`Tides` = list("Relative tide level (m)" = "relative_tide_level",
-                                   "Water temperature (°C)" = "water_temperature"),
-                    
-                    `Meteorology` = list("Precipitation (ml)" = "ppt",
-                                         "Avg. Temperature (°C)" = "avg.t",
-                                         "Min. Temperature (°C)" = "min.t",
-                                         "Avg. Relative Humidity (%)" = "avg.rh",
-                                         "Min. Relative Humidity (%)" = "min.rh",
-                                         "Max Relative Humidity (%)" = "max.rh",
-                                         "Avg. Wind Speed (m/s)" = "avg.ws",
-                                         "Avg. Wind Angle (°)" = "avg.wang",
-                                         "St. Dev. of Wind Direction (°)" = "std.wang",
-                                         "Solar Radiation (kJ/m^2)" = "rad.sol",
-                                         "PAR (mmol/m^2/hr)" = "par",
-                                         "Soil Temperature (°C)" = "soil.t"))
-
 mod_01_var_select_ui <- function(id){
   ns <- NS(id)
   
@@ -33,12 +16,12 @@ mod_01_var_select_ui <- function(id){
     shiny::selectInput(
       ns("variable"),
       "Select variable",
-      choices = list("Precipitation (ml)" = "ppt",
-                      "Avg. air temperature (°C)" = "avg.t",
-                      "Avg. wind speed (m/s)" = "avg.ws",
-                      "Relative tide level (m)" = "relative_tide_level",
-                      "Water temperature (°C)" = "water_temperature"),
-      selected = list("Avg. air Temperature (°C)" = "avg.t"),
+      choices = list("Precipitation (cu in)" = "ppt",
+                      "Avg. air temperature (°F)" = "avg.t",
+                      "Avg. wind speed (ft/s)" = "avg.ws",
+                      "Relative tide level (ft)" = "relative_tide_level",
+                      "Water temperature (°F)" = "water_temperature"),
+      selected = list("Avg. air Temperature (°F)" = "avg.t"),
       multiple = TRUE
     ),
     
@@ -76,11 +59,11 @@ mod_01_var_select_server <- function(input, output, session) {
       text <- vector()
       for (i in 1:length(input$variable)) {
         text[i] <- switch(input$variable[i],
-                          "ppt" = "precipitation (ml)",
-                          "avg.t" = "air temperature (°C)",
-                          "avg.ws" = "wind Speed (m/s)",
-                          "relative_tide_level" ="relative tide level (m)",
-                          "water_temperature"  = "water temperature (°C)")
+                          "ppt" = "precipitation (cu in)",
+                          "avg.t" = "air temperature (°F)",
+                          "avg.ws" = "wind Speed (ft/s)",
+                          "relative_tide_level" ="relative tide level (ft)",
+                          "water_temperature"  = "water temperature (°F)")
       }
       # browser()
       paste0("You've selected ",ifelse(length(text) > 1, paste(text[1],text[2],sep = " and "),text),". ",

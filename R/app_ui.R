@@ -10,7 +10,8 @@ app_ui <- function(request){
   
   bootstrapPage(theme = shinythemes::shinytheme("simplex"),#theme = "styles.css",
                 shinyjs::useShinyjs(),
-
+        
+                
                 # shinyFeedback::useShinyFeedback(),
                 # navbarPage(theme = shinythemes::shinytheme("simplex"), collapsible = TRUE,
                 #            "VCR Data Explorer", id="nav",
@@ -76,7 +77,8 @@ app_ui <- function(request){
                            shiny::column(
                              width = 3,
                              shiny::wellPanel(
-                               mod_01_var_select_ui("01_var_select_ui_1")
+                               mod_01_var_select_ui("01_var_select_ui_1"),
+                               mod_03_data_download_ui(id = "03_data_download_ui_1")
                              )
                            ),
                            mod_02_ts_vis_ui("02_ts_vis_ui_1")

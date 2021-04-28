@@ -28,20 +28,18 @@ mod_02_ts_vis_server <- function(input,
                                  plot1vars) {
   ns <- session$ns
 
-  
   plot1_obj <- shiny::reactive({
-
-    # browser()
+    
     if(!is.null(plot1vars$variable())){
-
+      
       ylabel <- NULL 
       for (i in 1:length(plot1vars$variable())){
         ylabel[i] <- switch(plot1vars$variable()[i],
-                            "ppt" = "Precipitation (ml)",
-                            "avg.t" = "Air temperature (°C)",
-                            "avg.ws" = "Wind Speed (m/s)",
-                            "relative_tide_level" ="Relative tide level (m)",
-                            "water_temperature"  = "Water temperature (°C)"
+                            "ppt" = "Precipitation (cu in)",
+                            "avg.t" = "Air temperature (°F)",
+                            "avg.ws" = "Wind Speed (ft/s)",
+                            "relative_tide_level" ="Relative tide level (ft)",
+                            "water_temperature"  = "Water temperature (°F)"
         )
       }
       
@@ -51,18 +49,19 @@ mod_02_ts_vis_server <- function(input,
       
       # aggregate data if selected
       if (plot1vars$agg_step() != "One hour"){
-
+        
         # browser()
         agg_step <-
           switch(plot1vars$agg_step(),
                  "One day" = "1440",
                  "One week" = "10080",
                  "One month" = "43800")
-
-          df2 <- xts::period.apply(df2,
-                                   INDEX = xts::endpoints(df2, "mins", k = as.numeric(agg_step)),
-                                   FUN =  mean, na.rm = T)
-        }
+        
+        df2 <- xts::period.apply(df2,
+                                 INDEX = xts::endpoints(df2, "mins", k = as.numeric(agg_step)),
+                                 FUN =  mean, na.rm = T)
+      }
+      
       
       # create a plot from one or two variables  
       if (length(plot1vars$variable()) == 1){
@@ -83,16 +82,25 @@ mod_02_ts_vis_server <- function(input,
           dygraphs::dyAxis("y2",label = ylabel[2]) %>% 
           dygraphs::dyOptions(connectSeparatedPoints = F) 
       } 
+      output <- list(p = p,
+                     df = df2)
+      output
+      
       # if no choices, return an empty plot
     } else {
-      return()
+      output <- list(p = NULL,
+                     df = NULL)
+      output
     }
-    
     
   })
   
+  callModule(mod_03_data_download_server,
+             id = "03_data_download_ui_1",
+             df_in = plot1_obj()[[2]])
+  
   output$plot1 <- dygraphs::renderDygraph({
-    plot1_obj()
+    plot1_obj()[[1]]
   })
   
 }
@@ -102,4 +110,3 @@ mod_02_ts_vis_server <- function(input,
 
 ## To be copied in the server
 # callModule(mod_02_ts_vis_server, "02_ts_vis_ui_1")
-
