@@ -6,10 +6,14 @@ app_server <- function(input, output, session) {
                           "01_var_select_ui_1")
   
   # execute time series module
-  
-  callModule(mod_02_ts_vis_server, 
+  df_in <- 
+    callModule(mod_02_ts_vis_server, 
              "02_ts_vis_ui_1",
              plot1vars = plot1vars)
+  
+  callModule(mod_03_data_download_server,
+               id = "03_data_download_ui_1",
+               df_in = df_in)
   
   # execute marsh vegetation variable selection module
   # leafvars <- callModule(mod_04_veg_var_select_server, 

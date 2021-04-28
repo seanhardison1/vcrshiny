@@ -31,7 +31,7 @@ mod_02_ts_vis_server <- function(input,
   plot1_obj <- shiny::reactive({
     
     if(!is.null(plot1vars$variable())){
-      
+    
       ylabel <- NULL 
       for (i in 1:length(plot1vars$variable())){
         ylabel[i] <- switch(plot1vars$variable()[i],
@@ -95,13 +95,15 @@ mod_02_ts_vis_server <- function(input,
     
   })
   
-  callModule(mod_03_data_download_server,
-             id = "03_data_download_ui_1",
-             df_in = plot1_obj()[[2]])
-  
   output$plot1 <- dygraphs::renderDygraph({
     plot1_obj()[[1]]
   })
+  
+  return(
+    list(
+      df = reactive({ plot1_obj()[[2]] })
+    )
+  )
   
 }
 

@@ -23,12 +23,14 @@ mod_03_data_download_server <- function(input,
                                         session,
                                        df_in){
   ns <- session$ns
+  
+  # browser()
   output$data_download <- downloadHandler(
     filename = function() {
       paste("data-", Sys.Date(), ".csv", sep="")
     },
     content = function(file) {
-      write.csv(df_in(), file) 
+      zoo::write.zoo(df_in$df(), file, row.names = F, sep=",") 
     }
   )
 }
