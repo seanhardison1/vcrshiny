@@ -11,6 +11,7 @@ app_server <- function(input, output, session) {
              "02_ts_vis_ui_1",
              plot1vars = plot1vars)
   
+  # execute module for downloading data
   callModule(mod_03_data_download_server,
                id = "03_data_download_ui_1",
                df_in = df_in)

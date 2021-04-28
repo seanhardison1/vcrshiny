@@ -57,21 +57,28 @@ mod_01_var_select_server <- function(input, output, session) {
   
   output$text <- renderText({ 
       text <- vector()
-      for (i in 1:length(input$variable)) {
-        text[i] <- switch(input$variable[i],
-                          "ppt" = "precipitation (cu in)",
-                          "avg.t" = "air temperature (°F)",
-                          "avg.ws" = "wind Speed (ft/s)",
-                          "relative_tide_level" ="relative tide level (ft)",
-                          "water_temperature"  = "water temperature (°F)")
-      }
-      # browser()
-      paste0("You've selected ",ifelse(length(text) > 1, paste(text[1],text[2],sep = " and "),text),". ",
-                                       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus suscipit non justo 
+      
+      if (length(input$variable) > 0){
+        for (i in 1:length(input$variable)) {
+          text[i] <- switch(input$variable[i],
+                            "ppt" = "precipitation (cu in)",
+                            "avg.t" = "air temperature (°F)",
+                            "avg.ws" = "wind Speed (ft/s)",
+                            "relative_tide_level" ="relative tide level (ft)",
+                            "water_temperature"  = "water temperature (°F)")
+        }
+        # browser()
+        paste0("You've selected ",ifelse(length(text) > 1, paste(text[1],text[2],sep = " and "),text),". ",
+               "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus suscipit non justo 
                                        id semper. Phasellus eu dui arcu. Integer ac ultrices risus, non maximus arcu. Donec
                                        ullamcorper rhoncus tortor, vitae vehicula ex elementum consequat. Pellentesque at 
                                        eleifend tellus. Nam sed rutrum odio, in tincidunt orci. Duis et condimentum sem, 
                                        ac sollicitudin justo. Nunc scelerisque non libero sed congue.") 
+      } else {
+        shinyjs::alert("A variable must be selected for the plot to appear.")
+      }
+      
+
     })
   
   observeEvent(input$variable, {
