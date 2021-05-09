@@ -30,6 +30,7 @@ mod_02_ts_vis_server <- function(input,
 
   plot1_obj <- shiny::reactive({
     
+    
     if(!is.null(plot1vars$variable())){
     
       ylabel <- NULL 
@@ -44,7 +45,8 @@ mod_02_ts_vis_server <- function(input,
       }
       
       # trim to selected time range
-      df2 <- vcrshiny::vcr_phys_vars[paste0(plot1vars$period()[1],"/",plot1vars$period()[2])]
+      df2 <- vcrshiny::vcr_phys_vars[paste0(plot1vars$period()[1],
+                                            "/",plot1vars$period()[2])]
       df2 <- df2[, plot1vars$variable()]
       
       # aggregate data if selected
@@ -63,25 +65,47 @@ mod_02_ts_vis_server <- function(input,
       }
       
       
+      # browser()
+      # print(plot1vars$ref_step())
       # create a plot from one or two variables  
       if (length(plot1vars$variable()) == 1){
-        print(tail(df2))
+        # print(tail(df2))
         p <- dygraphs::dygraph(df2) %>% 
           dygraphs::dySeries(plot1vars$variable(), 
                              label = ylabel) %>%
           dygraphs::dyAxis("y",label = ylabel) %>% 
-          dygraphs::dyOptions(connectSeparatedPoints = F) 
+          dygraphs::dyOptions(connectSeparatedPoints = F) %>% 
+          
+          {if (plot1vars$variable() == "ppt" & plot1vars$ref_check())
+            dygraphs::dyShading(.,from = vcrshiny::extremes$precip_mean -
+                                  vcrshiny::extremes$precip_2_sd, 
+                                to = vcrshiny::extremes$precip_mean +
+                                  vcrshiny::extremes$precip_2_sd, axis = "y")
+            else if (plot1vars$variable() == "relative_tide_level" & 
+                     plot1vars$ref_check())
+              dygraphs::dyShading(.,from = vcrshiny::extremes$tides_mean -
+                                    vcrshiny::extremes$tides_2_sd, 
+                                  to = vcrshiny::extremes$tides_mean +
+                                    vcrshiny::extremes$tides_2_sd, axis = "y")
+            else if (plot1vars$variable() == "avg.ws" & 
+                     plot1vars$ref_check())
+              dygraphs::dyShading(.,from = vcrshiny::extremes$wind_speed_mean -
+                                    vcrshiny::extremes$wind_speed_2_sd, 
+                                  to = vcrshiny::extremes$wind_speed_mean +
+                                    vcrshiny::extremes$wind_speed_2_sd, axis = "y")
+            else .} 
         
       } else if (length(plot1vars$variable()) == 2) {
+        
         p <- dygraphs::dygraph(df2) %>% 
           dygraphs::dySeries(plot1vars$variable()[1], 
                              label = ylabel[1]) %>%
           dygraphs::dyAxis("y",label = ylabel[1]) %>%
-          
           dygraphs::dySeries(plot1vars$variable()[2], axis = 'y2') %>% 
           dygraphs::dyAxis("y2",label = ylabel[2]) %>% 
           dygraphs::dyOptions(connectSeparatedPoints = F) 
       } 
+      
       output <- list(p = p,
                      df = df2)
       output
@@ -94,13 +118,15 @@ mod_02_ts_vis_server <- function(input,
     }
     
   })
-  
+
   output$plot1 <- dygraphs::renderDygraph({
+    # plot1vars$ref_check()
     plot1_obj()[[1]]
   })
   
   return(
     list(
+      p = reactive({  plot1_obj()[[1]] }),
       df = reactive({ plot1_obj()[[2]] })
     )
   )

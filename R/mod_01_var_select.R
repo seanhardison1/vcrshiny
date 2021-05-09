@@ -13,39 +13,60 @@ mod_01_var_select_ui <- function(id){
   ns <- NS(id)
   
   tagList(
-    shiny::selectInput(
-      ns("variable"),
-      "Select variable",
-      choices = list("Precipitation (cu in)" = "ppt",
-                      "Avg. air temperature (°F)" = "avg.t",
-                      "Avg. wind speed (ft/s)" = "avg.ws",
-                      "Relative tide level (ft)" = "relative_tide_level",
-                      "Water temperature (°F)" = "water_temperature"),
-      selected = list("Avg. air Temperature (°F)" = "avg.t"),
-      multiple = TRUE
+
+    fluidRow(
+      column(8, align="left",
+             shiny::selectInput(
+               ns("variable"),
+               "Select variable",
+               choices = list("Precipitation (cu in)" = "ppt",
+                              "Avg. air temperature (°F)" = "avg.t",
+                              "Avg. wind speed (ft/s)" = "avg.ws",
+                              "Relative tide level (ft)" = "relative_tide_level",
+                              "Water temperature (°F)" = "water_temperature"),
+               selected = list("Relative tide level (ft)" = "relative_tide_level"),
+               multiple = TRUE
+             ),
+      ),
+      column(4, align = "center",
+             br(),
+             br(),
+             shinyWidgets::prettyCheckbox(
+               inputId = ns("ref_check"), label = "Include reference",
+               icon = icon("check"), value = F
+             ),
+      )
     ),
-    
+
     shiny::sliderInput(
       ns("period"),
       "Select time period",
-      min = Sys.Date() - lubridate::years(10),
+      min = Sys.Date() - lubridate::years(5),
       max = Sys.Date(),
-      value = c(Sys.Date() - months(lubridate::month(12)),
+      value = c(Sys.Date() - months(lubridate::month(2)),
                 Sys.Date()),
       timeFormat="%b-%Y"
     ),
     
-    shinyWidgets::radioGroupButtons(
-      ns("agg_step"), 
-      label = "Aggregate data", 
-      choices = c("One hour","One day", "One week","One month"),
-      selected = "One hour",
-      size = "xs"
-    ),
+    fluidRow(
+      column(7, 
+           shinyWidgets::radioGroupButtons(
+             ns("agg_step"), 
+             label = "Aggregate data", 
+             choices = c("One hour","One day", "One week","One month"),
+             selected = "One hour",
+             size = "xs"
+          )
+        ),
+      column(5,
+             br(),
+         mod_03_data_download_ui(id = "03_data_download_ui_1")
+
+       )
+     ),
     
-    textOutput(ns("text"))
+    # textOutput(ns("text"))
   )
-  
 }
 
 #' 01_var_select Server Function
@@ -82,18 +103,40 @@ mod_01_var_select_server <- function(input, output, session) {
     })
   
   observeEvent(input$variable, {
-    if (length(input$variable) > 2) {
+    # browser()
+    if (length(input$variable) == 2){
+      shinyjs::hideElement("ref_check")
+    } else if (length(input$variable) > 2) {
       shinyjs::alert("Only two variables may be displayed at one time.")
       shinyjs::reset("variable")
-    } 
+    } else if (length(input$variable) == 1) {
+      shinyjs::showElement("ref_check")
+    }
+  })  
+  
+  observeEvent(input$agg_step, {
+    if (input$agg_step != "One hour"){
+      shinyjs::hideElement("ref_check")
+    } else {
+      shinyjs::showElement("ref_check")
+    }
   })
+  
+  # observe(input$ref_check,{
+  #   
+  #   if (input$ref_check) print(input$ref_check)
+  #   # browser()
+  # })
+  
+
   
   return(
     list(
       period = reactive({ input$period }),
       variable = reactive({ input$variable }),
       dataset = reactive({ input$dataset }),
-      agg_step = reactive({ input$agg_step })
+      agg_step = reactive({ input$agg_step }),
+      ref_check = reactive({ input$ref_check })
     )
   )
 }

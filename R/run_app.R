@@ -5,7 +5,7 @@
 #' @export
 #' @importFrom shiny shinyApp
 #' @importFrom golem with_golem_options
-run_app <- function(
+run_app <- function(get_latest = T,
   ...
 ) {
   with_golem_options(

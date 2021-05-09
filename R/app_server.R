@@ -16,6 +16,12 @@ app_server <- function(input, output, session) {
                id = "03_data_download_ui_1",
                df_in = df_in)
   
+  # execute module for reference lines
+  # callModule(mod_04_reference_lines_server,
+  #            id = "04_reference_lines_ui_1",
+  #            plot1vars = plot1vars,
+  #            df_in = df_in)
+  # 
   # execute marsh vegetation variable selection module
   # leafvars <- callModule(mod_04_veg_var_select_server, 
   #                        "04_veg_var_select_ui_1")

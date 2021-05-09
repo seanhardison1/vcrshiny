@@ -10,7 +10,7 @@ app_ui <- function(request){
   
   bootstrapPage(theme = shinythemes::shinytheme("simplex"),#theme = "styles.css",
                 shinyjs::useShinyjs(),
-        
+
                 
                 # shinyFeedback::useShinyFeedback(),
                 # navbarPage(theme = shinythemes::shinytheme("simplex"), collapsible = TRUE,
@@ -71,14 +71,22 @@ app_ui <- function(request){
                 #   ),               
                 # Tides and meteorological data------------------------------------------------
                 tabPanel("Tides and Meteorology",
+                         # tags$head(
+                         #   tags$style(
+                         #     HTML('
+                         # br {
+                         #    display: block; /* makes it have a width */
+                         #    content: ""; /* clears default height */
+                         #    margin-top: 50; /* change this to whatever height you want it */
+                         #  }'))
+                         # ),
                         shinyWidgets::chooseSliderSkin("Flat", color = "#112446"),
 
                          shiny::fluidRow(
                            shiny::column(
-                             width = 3,
+                             width =4,
                              shiny::wellPanel(
-                               mod_01_var_select_ui("01_var_select_ui_1"),
-                               mod_03_data_download_ui(id = "03_data_download_ui_1")
+                               mod_01_var_select_ui("01_var_select_ui_1")
                              )
                            ),
                            mod_02_ts_vis_ui("02_ts_vis_ui_1")
