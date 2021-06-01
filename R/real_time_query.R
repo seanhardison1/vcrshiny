@@ -7,7 +7,7 @@
 #' 
 # tides-----------------------------------
 real_time_query <- function(){
-  # last_tide <- zoo::index(xts::last(vcrshiny::tides))
+  # last_tide <- zoo::index(xts::last(vcrshiny::vcr_phys_vars))
   
   fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayTide.csv"
   infile1 <- readr::read_csv(fname, 
@@ -21,7 +21,7 @@ real_time_query <- function(){
   
   if (nrow(infile1) != 0){
     # Process for use in package format
-    tides_new_xts_rt <-
+    tides_new_df <-
       infile1 %>% 
       
       # select data from the Oyster station only
@@ -65,10 +65,16 @@ real_time_query <- function(){
       
       # select variables of interest
       dplyr::ungroup() %>% 
-      dplyr::select(datetime, relative_tide_level, water_temperature)
+      dplyr::select(datetime, relative_tide_level, water_temperature) %>% 
+      dplyr::filter(datetime <= Sys.time(),
+                    datetime > zoo::index(xts::last(vcrshiny::vcr_phys_vars)))
+      
+    
+    tides_new_xts <- xts(x = tides_new_df %>% dplyr::select(-datetime), order.by = tides_new_df$datetime)
+    
   } else {
     message("No tidal data available")
-    tides_new_xts_rt <- NA
+    tides_new_xts <- NA
   }
   # meteorology-----------------------------
   # last_meteo <- zoo::index(xts::last(vcrshiny::meteorology))
@@ -115,20 +121,22 @@ real_time_query <- function(){
       dplyr::select(datetime, PPT, AVG.T, AVG.WS) %>% 
       dplyr::mutate(AVG.T = (AVG.T * 9/5) + 32,
                     AVG.WS = AVG.WS * 3.28084,
-                    PPT = PPT/16.387)
+                    PPT = PPT/16.387) %>% 
+      dplyr::filter(datetime <= Sys.time(),
+                    datetime > zoo::index(xts::last(vcrshiny::vcr_phys_vars)))
     
     names(meteo_new_df) <- stringr::str_to_lower(names(meteo_new_df))
     
-    meteo_new_xts_rt <- xts::xts(x = meteo_new_df %>% 
+    meteo_new_xts <- xts::xts(x = meteo_new_df %>% 
                                    dplyr::select(-datetime), 
                                  order.by = meteo_new_df$datetime)
   } else {
     message("No meteo data available")
-    meteo_new_xts_rt <- NA
+    meteo_new_xts <- NA
   }
   
-
+  # bind new to old
+  vcr_phys_rt <- merge(meteo_new_xts, tides_new_xts)
   
-  return(list(tides_new = tides_new_xts_rt,
-              meteo_new = meteo_new_xts_rt))
+  return(vcr_phys_rt)
 }

@@ -111,7 +111,8 @@ tides_new_df <-
   tides_hourly_ltm %>% 
   ungroup() %>% 
   dplyr::select(-year_group) %>% 
-  inner_join(.,tides_new_df, "datetime")
+  inner_join(.,tides_new_df, "datetime") %>% 
+  filter(datetime <= Sys.Date())
 
 # convert to xts for dygraphs
 tides_new_xts <- xts(x = tides_new_df %>% dplyr::select(-datetime), order.by = tides_new_df$datetime)
@@ -203,11 +204,13 @@ meteo_new_df <-
   meteo_hourly_ltm %>% 
   ungroup() %>% 
   dplyr::select(-year_group) %>% 
-  inner_join(.,meteo_new_df, "datetime")
+  inner_join(.,meteo_new_df, "datetime") %>% 
+  filter(datetime <= Sys.Date())
 
 meteo_new <- xts(x = meteo_new_df %>% dplyr::select(-datetime), order.by = meteo_new_df$datetime)
 rm(meteo_new_df, tides_new_df)
 
 # bind new to old
 vcr_phys_vars <- merge(meteo_new, tides_new_xts)
+
 usethis::use_data(vcr_phys_vars, overwrite = T)

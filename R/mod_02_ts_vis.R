@@ -25,12 +25,13 @@ mod_02_ts_vis_ui <-function(id) {
 mod_02_ts_vis_server <- function(input, 
                                  output, 
                                  session, 
-                                 plot1vars) {
+                                 plot1vars,
+                                 df) {
   ns <- session$ns
 
   plot1_obj <- shiny::reactive({
     
-    
+    print(head(df))
     if(!is.null(plot1vars$variable())){
     
       ylabel <- NULL 
@@ -45,10 +46,10 @@ mod_02_ts_vis_server <- function(input,
       }
       
       # trim to selected time range
-      df2 <- vcrshiny::vcr_phys_vars[paste0(plot1vars$period()[1],
-                                            "/",plot1vars$period()[2])]
+      df2 <- df[paste0(plot1vars$period()[1],"/",plot1vars$period()[2])]
       df2 <- df2[, plot1vars$variable()]
       
+      # browser()
       # aggregate data if selected
       if (plot1vars$agg_step() != "One hour"){
         

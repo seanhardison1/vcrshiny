@@ -1,5 +1,22 @@
-# server logic
-app_server <- function(input, output, session) {
+rtq <- function(){
+  rtq <- vcrshiny:::real_time_query()
+  rtq$ltm_water_temperature <- NA
+  rtq$ltm_avg_t <- NA
+  rtq <- rtq[, names(vcr_phys_vars)]
+  # print(head(rtq))
+  df <- rbind(rtq, vcrshiny::vcr_phys_vars)
+  # tail(df,10)
+  return(df)
+}
+
+app_server <- function(input, output, session, df, on = F) {
+
+  # fill in data collected since last build
+  if (on){
+    df <- rtq()
+  } else {
+    df <- vcrshiny::vcr_phys_vars
+  }
   
   # execute plot variable selection modules
   plot1vars <- callModule(mod_01_var_select_server, 
@@ -9,7 +26,8 @@ app_server <- function(input, output, session) {
   df_in <- 
     callModule(mod_02_ts_vis_server, 
              "02_ts_vis_ui_1",
-             plot1vars = plot1vars)
+             plot1vars = plot1vars,
+             df = df)
   
   # execute module for downloading data
   callModule(mod_03_data_download_server,
