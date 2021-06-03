@@ -77,19 +77,23 @@ mod_02_ts_vis_server <- function(input,
           dygraphs::dyAxis("y",label = ylabel) %>% 
           dygraphs::dyOptions(connectSeparatedPoints = F) %>% 
           
-          {if (plot1vars$variable() == "ppt" & plot1vars$ref_check())
+          {if (plot1vars$variable() == "ppt" & 
+               plot1vars$ref_check() &
+               plot1vars$agg_step() == "One hour")
             dygraphs::dyShading(.,from = vcrshiny::extremes$precip_mean -
                                   vcrshiny::extremes$precip_2_sd, 
                                 to = vcrshiny::extremes$precip_mean +
                                   vcrshiny::extremes$precip_2_sd, axis = "y")
             else if (plot1vars$variable() == "relative_tide_level" & 
-                     plot1vars$ref_check())
+                     plot1vars$ref_check() &
+                     plot1vars$agg_step() == "One hour")
               dygraphs::dyShading(.,from = vcrshiny::extremes$tides_mean -
                                     vcrshiny::extremes$tides_2_sd, 
                                   to = vcrshiny::extremes$tides_mean +
                                     vcrshiny::extremes$tides_2_sd, axis = "y")
             else if (plot1vars$variable() == "avg.ws" & 
-                     plot1vars$ref_check())
+                     plot1vars$ref_check() &
+                     plot1vars$agg_step() == "One hour")
               dygraphs::dyShading(.,from = vcrshiny::extremes$wind_speed_mean -
                                     vcrshiny::extremes$wind_speed_2_sd, 
                                   to = vcrshiny::extremes$wind_speed_mean +
