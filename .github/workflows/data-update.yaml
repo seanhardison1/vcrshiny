@@ -60,6 +60,7 @@ jobs:
 
       - name: Commit and push new data
         run: |
+          git add .
           git pull
           git commit . -m 'VCR data query'
           git push https://${{github.actor}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git HEAD:${{ github.ref }}
