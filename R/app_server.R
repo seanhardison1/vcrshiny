@@ -9,7 +9,7 @@ rtq <- function(){
   return(df)
 }
 
-app_server <- function(input, output, session, df, on = F) {
+app_server <- function(input, output, session, df, on = T) {
 
   # fill in data collected since last build
   if (on){
