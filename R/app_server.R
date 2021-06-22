@@ -8,8 +8,6 @@ rtq <- function(){
     df <- vcrshiny::vcr_phys_vars
     message("Using packaged data")
   }
-  
-
   return(df)
 }
 

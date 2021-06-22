@@ -1,7 +1,7 @@
 on:
   schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron:  '0 */1 * * *'
+    - cron:  '0 */6 * * *'
 
 name: data-update
 
@@ -60,7 +60,6 @@ jobs:
 
       - name: Commit and push new data
         run: |
-          git pull
           git commit . -m 'VCR data query'
           git push https://${{github.actor}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git HEAD:${{ github.ref }}
           
