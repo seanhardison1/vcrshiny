@@ -34,13 +34,14 @@ real_time_query <- function(){
       # process the datetimes
       dplyr::mutate(date = as.Date(date, format = "%d%b%Y"),
              time = format(strptime(substr(as.POSIXct(sprintf("%04.0f", as.numeric(time)),
-                                                      format="%H%M"), 12, 16), 
+                                                      format="%H%M", tz = "America/New_York"), 12, 16), 
                                     '%H:%M'), '%I:%M %p'),
              datetime = as.POSIXct(paste(date, time), 
-                                   format="%Y-%m-%d %I:%M %p"),
-             water_temperature = as.numeric(water_temperature)) %>% 
+                                   format="%Y-%m-%d %I:%M %p", tz = "America/New_York"),
+             water_temperature = as.numeric(water_temperature)) %>%
+      dplyr::filter(date <= Sys.Date()) %>% 
       dplyr::select(-date, -time) %>%
-      dplyr::filter(!is.na(datetime)) %>%
+      dplyr::filter(!is.na(datetime)) %>% 
       
       # Convert to tsibble to fill missing datetimes
       dplyr::filter(!duplicated(datetime)) %>% 
@@ -56,12 +57,7 @@ real_time_query <- function(){
       dplyr::summarise(relative_tide_level = mean(relative_tide_level, na.rm = T) * 3.28084,
                        water_temperature = (mean(water_temperature, na.rm = T) * 9/5) + 32) %>% 
       
-      # convert back to datetime
-      dplyr::mutate(date = as.Date(paste(y,m,d, sep = "-")),
-             time = strptime(h, "%H"),
-             datetime = lubridate::ymd_hms(as.POSIXct(paste(date,
-                                                            lubridate::hour(time)), 
-                                           format="%Y-%m-%d %H"))) %>% 
+      dplyr::mutate(datetime = lubridate::ymd_h(paste(y, m, d, h, sep = "-"), tz = "America/New_York")) %>% 
       
       # select variables of interest
       dplyr::ungroup() %>% 
@@ -69,8 +65,10 @@ real_time_query <- function(){
       dplyr::filter(datetime <= Sys.time(),
                     datetime > zoo::index(xts::last(vcrshiny::vcr_phys_vars)))
       
-    
-    tides_new_xts <- xts(x = tides_new_df %>% dplyr::select(-datetime), order.by = tides_new_df$datetime)
+    tides_new_xts <- xts::xts(x = tides_new_df %>% dplyr::select(-datetime), 
+                              order.by = tides_new_df$datetime,
+                              tzone = "America/New_York")
+    # xts::tzone(tides_new_xts) <- "America/New_York"
     
   } else {
     message("No tidal data available")
@@ -108,11 +106,13 @@ real_time_query <- function(){
       dplyr::mutate_at(dplyr::vars(PPT:SOIL.T), as.numeric) %>% 
       tidyr::unite("datetime",c("YEAR", "MONTH", "DAY"), sep = "-", remove = T) %>%
       dplyr::mutate(TIME2 = format(strptime(substr(as.POSIXct(sprintf("%04.0f", as.numeric(TIME)),
-                                                       format="%H%M"), 12, 16), 
-                                     '%H:%M'), '%I:%M %p')) %>% 
+                                                       format="%H%M", tz = "America/New_York"), 12, 16), 
+                                     '%H:%M'), '%I:%M %p'),
+                    date = as.Date(datetime)) %>% 
+      dplyr::filter(date <= Sys.Date()) %>% 
       dplyr::mutate(datetime = as.POSIXct(paste(.$datetime, TIME2), 
-                                   format="%Y-%m-%d %I:%M %p")) %>% 
-      dplyr::select(-TIME, -TIME2) %>% 
+                                   format="%Y-%m-%d %I:%M %p", tz = "America/New_York")) %>% 
+      dplyr::select(-TIME, -TIME2, -date) %>% 
       dplyr::filter(!is.na(datetime)) %>% 
       dplyr::filter(!duplicated(datetime)) %>% 
       tsibble::tsibble(index = datetime) %>% 
@@ -130,13 +130,14 @@ real_time_query <- function(){
     meteo_new_xts <- xts::xts(x = meteo_new_df %>% 
                                    dplyr::select(-datetime), 
                                  order.by = meteo_new_df$datetime)
+    # xts::tzone(meteo_new_xts) <- "America/New_York"
   } else {
     message("No meteo data available")
     meteo_new_xts <- NA
   }
   
   # bind new to old
-  vcr_phys_rt <- merge(meteo_new_xts, tides_new_xts)
+  vcr_phys_rt <- xts::merge.xts(meteo_new_xts, tides_new_xts)
   
   return(vcr_phys_rt)
 }

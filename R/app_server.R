@@ -1,22 +1,29 @@
 rtq <- function(){
   rtq <- vcrshiny:::real_time_query()
-  rtq$ltm_water_temperature <- NA
-  rtq$ltm_avg_t <- NA
-  rtq <- rtq[, names(vcr_phys_vars)]
-  # print(head(rtq))
-  df <- rbind(rtq, vcrshiny::vcr_phys_vars)
-  # tail(df,10)
+  if(length(rtq)!=0){
+    rtq <- rtq[, names(vcrshiny::vcr_phys_vars)]
+    # print(head(rtq))
+    df <- rbind(rtq, vcrshiny::vcr_phys_vars)
+  } else {
+    df <- vcrshiny::vcr_phys_vars
+    message("Using packaged data")
+  }
+  
+
   return(df)
 }
 
-app_server <- function(input, output, session, df, on = F) {
+app_server <- function(input, output, session, df, on = T) {
 
   # fill in data collected since last build
-  if (on){
+  # if (on){
+    # tail(rtq())
+  # browser()
     df <- rtq()
-  } else {
-    df <- vcrshiny::vcr_phys_vars
-  }
+    
+  # } else {
+  #   df <- vcrshiny::vcr_phys_vars
+  # }
   
   # execute plot variable selection modules
   plot1vars <- callModule(mod_01_var_select_server, 

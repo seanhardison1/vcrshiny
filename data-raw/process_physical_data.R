@@ -40,13 +40,14 @@ tides_new_df <-
     mutate_all(function(x)ifelse(x == ".", NA, x)) %>% 
   
     # process the datetimes
-    mutate(date = as.Date(date, format = "%d%b%Y"),
+    dplyr::mutate(date = as.Date(date, format = "%d%b%Y"),
            time = format(strptime(substr(as.POSIXct(sprintf("%04.0f", as.numeric(time)),
-                                                    format="%H%M"), 12, 16), 
+                                                    format="%H%M", tz = "America/New_York"), 12, 16), 
                                   '%H:%M'), '%I:%M %p'),
            datetime = as.POSIXct(paste(date, time), 
-                                 format="%Y-%m-%d %I:%M %p"),
+                                 format="%Y-%m-%d %I:%M %p", tz = "America/New_York"),
            water_temperature = as.numeric(water_temperature)) %>% 
+    dplyr::filter(date <= Sys.Date()) %>% 
     dplyr::select(-date, -time) %>%
     dplyr::filter(!is.na(datetime)) %>%
   
@@ -65,58 +66,15 @@ tides_new_df <-
                      water_temperature = (mean(water_temperature, na.rm = T) * 9/5) + 32) %>% 
   
     # convert back to datetime
-    mutate(date = as.Date(paste(y,m,d, sep = "-")),
-           time = strptime(h, "%H"),
-           datetime = ymd_hms(as.POSIXct(paste(date, hour(time)), 
-                                format="%Y-%m-%d %H"))) %>% 
+    dplyr::mutate(datetime = lubridate::ymd_h(paste(y, m, d, h, sep = "-"), tz = "America/New_York")) %>%
     
     # select variables of interest
     ungroup() %>% 
     dplyr::select(datetime, relative_tide_level, water_temperature)
-    
-if (get_hourly_ltm){
-  # Get hourly long-term means for water temperature data. 
-  # The reference period is 2006-2021
-  hourly_ltm <- 
-    tides_new_df  %>%
-    mutate(month = month(datetime),
-           day = day(datetime),
-           hour = hour(datetime)) %>% 
-    group_by(month, day, hour) %>% 
-    dplyr::summarise(ltm_water_temperature = mean(water_temperature, na.rm = T)) %>% 
-    mutate(date = as.Date(paste("2000",month, day, sep = "-"), "%Y-%m-%d"),
-           time = strptime(hour, "%H"),
-           datetime = ymd_hms(as.POSIXct(paste(date, hour(time)), 
-                                         format="%Y-%m-%d %H"))) %>%
-    ungroup() %>% 
-    dplyr::select(-month,-day, -hour,-date,-time)
-  
-  n_years <- length(unique(year(tides_new_df$datetime)))
-  
-  # In order to bind the LTMs into the real time data, keep the month-day-hour values, but 
-  # add unique years
-  tides_hourly_ltm <- do.call("rbind", replicate(n_years, hourly_ltm, simplify = FALSE)) %>% 
-    mutate(year_group = rep(1:n_years, each = 366 * 24),
-           year_group = plyr::mapvalues(year_group, from = unique(year_group),
-                                        to = 2006:max(unique(year(tides_new_df$datetime)))))
-  
-  year(tides_hourly_ltm$datetime) <- tides_hourly_ltm$year_group
-  save(tides_hourly_ltm, file = "data/hourly_ltm.rdata")
-} else {
-  load("data/hourly_ltm.rdata")
-}
-
-# join tidal data with ltm data
-tides_new_df <- 
-  tides_hourly_ltm %>% 
-  ungroup() %>% 
-  dplyr::select(-year_group) %>% 
-  inner_join(.,tides_new_df, "datetime") %>% 
-  filter(datetime <= Sys.Date())
-
+ 
 # convert to xts for dygraphs
 tides_new_xts <- xts(x = tides_new_df %>% dplyr::select(-datetime), order.by = tides_new_df$datetime)
-
+# xts::tzone(tides_new_xts) <- "America/New_York"
 # Meteorology-----------------------------
 
 
@@ -149,10 +107,10 @@ meteo_new_df <- dt1 %>%
   mutate_at(vars(PPT:SOIL.T), as.numeric) %>% 
   tidyr::unite("datetime",c("YEAR", "MONTH", "DAY"), sep = "-", remove = T) %>%
   mutate(TIME2 = format(strptime(substr(as.POSIXct(sprintf("%04.0f", as.numeric(TIME)),
-                                                   format="%H%M"), 12, 16), 
+                                                   format="%H%M", tz = "America/New_York"), 12, 16), 
                                  '%H:%M'), '%I:%M %p')) %>% 
   mutate(datetime = as.POSIXct(paste(.$datetime, TIME2), 
-                               format="%Y-%m-%d %I:%M %p")) %>% 
+                               format="%Y-%m-%d %I:%M %p", tz = "America/New_York")) %>% 
   dplyr::select(-TIME, -TIME2) %>% 
   dplyr::filter(!is.na(datetime)) %>% 
   filter(!duplicated(datetime)) %>% 
@@ -166,48 +124,9 @@ meteo_new_df <- dt1 %>%
 
 names(meteo_new_df) <- str_to_lower(names(meteo_new_df))
 
-if (get_hourly_ltm){
-  # Get hourly long-term means for tides and water temperature data. 
-  # The reference period is 1991-2021
-  
-  ltm_avg_t <- 
-    meteo_new_df  %>%
-    mutate(month = month(datetime),
-           day = day(datetime),
-           hour = hour(datetime)) %>% 
-    group_by(month, day, hour) %>% 
-    dplyr::summarise(ltm_avg_t = mean(avg.t, na.rm = T)) %>% 
-    mutate(date = as.Date(paste("2000",month, day, sep = "-"), "%Y-%m-%d"),
-           time = strptime(hour, "%H"),
-           datetime = ymd_hms(as.POSIXct(paste(date, hour(time)), 
-                                         format="%Y-%m-%d %H"))) %>%
-    ungroup() %>% 
-    dplyr::select(-month,-day, -hour,-date,-time)
-  
-  n_years <- length(unique(year(meteo_new_df$datetime)))
-  
-  # In order to bind the LTMs into the real time data, keep the month-day-hour values, but 
-  # add unique years
-  meteo_hourly_ltm <- do.call("rbind", replicate(n_years, ltm_avg_t, simplify = FALSE)) %>% 
-    mutate(year_group = rep(1:n_years, each = 366 * 24),
-           year_group = plyr::mapvalues(year_group, from = unique(year_group),
-                                        to = 1991:max(unique(year(meteo_new_df$datetime)))))
-  
-  year(meteo_hourly_ltm$datetime) <- meteo_hourly_ltm$year_group
-  save(meteo_hourly_ltm, file = "data/meteo_hourly_ltm.rdata")
-} else {
-  load("data/meteo_hourly_ltm.rdata")
-}
-
-# join meteo data with ltm data
-meteo_new_df <- 
-  meteo_hourly_ltm %>% 
-  ungroup() %>% 
-  dplyr::select(-year_group) %>% 
-  inner_join(.,meteo_new_df, "datetime") %>% 
-  filter(datetime <= Sys.Date())
-
 meteo_new <- xts(x = meteo_new_df %>% dplyr::select(-datetime), order.by = meteo_new_df$datetime)
+
+# xts::tzone(meteo_new) <- "America/New_York"
 rm(meteo_new_df, tides_new_df)
 
 # bind new to old

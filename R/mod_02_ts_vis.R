@@ -44,7 +44,7 @@ mod_02_ts_vis_server <- function(input,
                             "water_temperature"  = "Water temperature (°F)"
         )
       }
-      
+      # browser()
       # trim to selected time range
       df2 <- df[paste0(plot1vars$period()[1],"/",plot1vars$period()[2])]
       df2 <- df2[, plot1vars$variable()]
@@ -75,7 +75,8 @@ mod_02_ts_vis_server <- function(input,
           dygraphs::dySeries(plot1vars$variable(), 
                              label = ylabel) %>%
           dygraphs::dyAxis("y",label = ylabel) %>% 
-          dygraphs::dyOptions(connectSeparatedPoints = F) %>% 
+          dygraphs::dyOptions(connectSeparatedPoints = F,
+                              useDataTimezone = TRUE) %>% 
           
           {if (plot1vars$variable() == "ppt" & 
                plot1vars$ref_check() &
@@ -108,7 +109,8 @@ mod_02_ts_vis_server <- function(input,
           dygraphs::dyAxis("y",label = ylabel[1]) %>%
           dygraphs::dySeries(plot1vars$variable()[2], axis = 'y2') %>% 
           dygraphs::dyAxis("y2",label = ylabel[2]) %>% 
-          dygraphs::dyOptions(connectSeparatedPoints = F) 
+          dygraphs::dyOptions(connectSeparatedPoints = F,
+                              useDataTimezone = TRUE)
       } 
       
       output <- list(p = p,
