@@ -2,7 +2,7 @@ rtq <- function(){
   rtq <- vcrshiny:::real_time_query()
   rtq$ltm_water_temperature <- NA
   rtq$ltm_avg_t <- NA
-  rtq <- rtq[, names(vcr_phys_vars)]
+  rtq <- rtq[, names(vcrshiny::vcr_phys_vars)]
   # print(head(rtq))
   df <- rbind(rtq, vcrshiny::vcr_phys_vars)
   # tail(df,10)
