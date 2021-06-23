@@ -14,14 +14,11 @@ rtq <- function(){
 app_server <- function(input, output, session, df, on = T) {
 
   # fill in data collected since last build
-  # if (on){
-    # tail(rtq())
-  # browser()
+  if (on){
     df <- rtq()
-    
-  # } else {
-  #   df <- vcrshiny::vcr_phys_vars
-  # }
+  } else {
+    df <- vcrshiny::vcr_phys_vars
+  }
   
   # execute plot variable selection modules
   plot1vars <- callModule(mod_01_var_select_server, 
