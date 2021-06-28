@@ -1,14 +1,15 @@
 # vcrshiny
-A data package and shiny app for visualizing research data collected as part of the Virginia Coast Reserve Long-Term Ecological Research (VCR LTER) program. The repository uses Github Actions to collect the most recent data from the VCR servers every four hours, and these data are immediately available in the app/package if installed or downloaded. However, the demo application linked at the top of this page is not tied to this update process (yet) 👻. 
 
-Read more about the program [here](https://www.vcrlter.virginia.edu/home2/).
+A data package and shiny app for communicating research data collected through the Virginia Coast Reserve Long-Term Ecological Research (VCR LTER) program. Data are queried from the VCR servers and displayed on the app within two hours of data collection at tidal and meteorological stations in Oyster, VA. The app was built using the [golem](https://github.com/ThinkR-open/golem) framework.
+
+Read more about the VCR LTER program [here](https://www.vcrlter.virginia.edu/home2/).
 
 Installation:
 ```
 devtools::install_github("seanhardison1/vcrshiny")
 ```
 
-To access up-to-date time series of air and water temperatures, precipitation, wind speeds, and tides from the VCR:
+To access time series of air and water temperatures, precipitation, wind speeds, and tides from the VCR:
 ```
 vcrshiny::vcr_phys_vars
 ```
