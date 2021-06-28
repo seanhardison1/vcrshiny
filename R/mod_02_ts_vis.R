@@ -28,7 +28,6 @@ mod_02_ts_vis_server <- function(input,
                                  plot1vars,
                                  df) {
   ns <- session$ns
-
   plot1_obj <- shiny::reactive({
     
     print(head(df))
@@ -126,6 +125,7 @@ mod_02_ts_vis_server <- function(input,
     
   })
 
+  
   output$plot1 <- dygraphs::renderDygraph({
     # plot1vars$ref_check()
     plot1_obj()[[1]]

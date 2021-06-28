@@ -132,4 +132,6 @@ rm(meteo_new_df, tides_new_df)
 # bind new to old
 vcr_phys_vars <- merge(meteo_new, tides_new_xts)
 
+vcr_phys_vars <- vcr_phys_vars[paste0(lubridate::year(Sys.Date()) - 1, "/", lubridate::year(Sys.Date()))]
+
 usethis::use_data(vcr_phys_vars, overwrite = T)

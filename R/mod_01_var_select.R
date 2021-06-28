@@ -26,13 +26,13 @@ mod_01_var_select_ui <- function(id){
                               "Water temperature (°F)" = "water_temperature"),
                selected = list("Relative tide level (ft)" = "relative_tide_level"),
                multiple = TRUE
-             ),
+             )
       ),
       column(4, align = "center",
              br(),
              br(),
              shinyWidgets::prettyCheckbox(
-               inputId = ns("ref_check"), label = "Include reference",
+               inputId = ns("ref_check"), label = "Include reference", 
                icon = icon("check"), value = F
              ),
       )
@@ -41,9 +41,9 @@ mod_01_var_select_ui <- function(id){
     shiny::sliderInput(
       ns("period"),
       "Select time period",
-      min = Sys.Date() - lubridate::years(5),
+      min = Sys.Date() - lubridate::years(1),
       max = Sys.Date(),
-      value = c(Sys.Date() - months(lubridate::month(2)),
+      value = c(Sys.Date() - months(lubridate::month(1)),
                 Sys.Date()),
       timeFormat="%b-%Y"
     ),
