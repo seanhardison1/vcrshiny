@@ -30,9 +30,7 @@ mod_02_ts_vis_server <- function(input,
   ns <- session$ns
   plot1_obj <- shiny::reactive({
     
-    print(head(df))
     if(!is.null(plot1vars$variable())){
-    
       ylabel <- NULL 
       for (i in 1:length(plot1vars$variable())){
         ylabel[i] <- switch(plot1vars$variable()[i],
@@ -64,9 +62,6 @@ mod_02_ts_vis_server <- function(input,
                                  FUN =  mean, na.rm = T)
       }
       
-      
-      # browser()
-      # print(plot1vars$ref_step())
       # create a plot from one or two variables  
       if (length(plot1vars$variable()) == 1){
         # print(tail(df2))
@@ -122,12 +117,10 @@ mod_02_ts_vis_server <- function(input,
                      df = NULL)
       output
     }
-    
   })
 
   
   output$plot1 <- dygraphs::renderDygraph({
-    # plot1vars$ref_check()
     plot1_obj()[[1]]
   })
   

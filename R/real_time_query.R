@@ -141,3 +141,16 @@ real_time_query <- function(){
   
   return(vcr_phys_rt)
 }
+
+#' Function to bind new and old data
+rtq <- function(){
+  rtq <- vcrshiny:::real_time_query()
+  if(length(rtq)!=0){
+    rtq <- rtq[, names(vcrshiny::vcr_phys_vars)]
+    df <- rbind(rtq, vcrshiny::vcr_phys_vars)
+  } else {
+    df <- vcrshiny::vcr_phys_vars
+    message("Using packaged data")
+  }
+  return(df)
+}

@@ -13,7 +13,6 @@ mod_01_var_select_ui <- function(id){
   ns <- NS(id)
   
   tagList(
-
     fluidRow(
       column(8, align="left",
              shiny::selectInput(
@@ -32,7 +31,7 @@ mod_01_var_select_ui <- function(id){
              br(),
              br(),
              shinyWidgets::prettyCheckbox(
-               inputId = ns("ref_check"), label = "Include reference", 
+               inputId = ns("ref_check"), label = "Include reference*", 
                icon = icon("check"), value = F
              ),
       )
@@ -64,9 +63,12 @@ mod_01_var_select_ui <- function(id){
 
        )
      ),
-    
     # textOutput(ns("text"))
+    br(),
+    p("*Reference shading refers to the long-term time series mean (2006-present for tidal data and 1991-present for 
+      meteorological data) +/- 2 standard deviations.")
   )
+
 }
 
 #' 01_var_select Server Function
@@ -78,7 +80,6 @@ mod_01_var_select_server <- function(input, output, session) {
   
   output$text <- renderText({ 
       text <- vector()
-      
       if (length(input$variable) > 0){
         for (i in 1:length(input$variable)) {
           text[i] <- switch(input$variable[i],
@@ -88,23 +89,15 @@ mod_01_var_select_server <- function(input, output, session) {
                             "relative_tide_level" ="relative tide level (ft)",
                             "water_temperature"  = "water temperature (°F)")
         }
-        # browser()
-        paste0("You've selected ",ifelse(length(text) > 1, paste(text[1],text[2],sep = " and "),text),". ",
-               "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus suscipit non justo 
-                                       id semper. Phasellus eu dui arcu. Integer ac ultrices risus, non maximus arcu. Donec
-                                       ullamcorper rhoncus tortor, vitae vehicula ex elementum consequat. Pellentesque at 
-                                       eleifend tellus. Nam sed rutrum odio, in tincidunt orci. Duis et condimentum sem, 
-                                       ac sollicitudin justo. Nunc scelerisque non libero sed congue.") 
       } else {
         shinyjs::alert("A variable must be selected for the plot to appear.")
       }
-      
-
     })
   
   observeEvent(input$variable, {
     # browser()
-    if (length(input$variable) == 2){
+    if (any(length(input$variable) == 2, input$variable %in% c("water_temperature",
+                                                            "avg.t"))){
       shinyjs::hideElement("ref_check")
     } else if (length(input$variable) > 2) {
       shinyjs::alert("Only two variables may be displayed at one time.")
@@ -121,15 +114,7 @@ mod_01_var_select_server <- function(input, output, session) {
       shinyjs::showElement("ref_check")
     }
   })
-  
-  # observe(input$ref_check,{
-  #   
-  #   if (input$ref_check) print(input$ref_check)
-  #   # browser()
-  # })
-  
 
-  
   return(
     list(
       period = reactive({ input$period }),

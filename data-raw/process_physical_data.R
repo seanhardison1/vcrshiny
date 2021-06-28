@@ -132,6 +132,20 @@ rm(meteo_new_df, tides_new_df)
 # bind new to old
 vcr_phys_vars <- merge(meteo_new, tides_new_xts)
 
+# find 2 * SD for visualizing extreme tides, precipitation, and wind speeds
+extremes <- 
+  data.frame(tides_mean = mean(vcr_phys_vars$relative_tide_level, na.rm = T),
+             tides_2_sd = sd(vcr_phys_vars$relative_tide_level, na.rm = T) * 2,
+             precip_2_sd = sd(vcr_phys_vars$ppt, na.rm = T) * 2,
+             precip_mean = mean(vcr_phys_vars$ppt, na.rm = T),
+             wind_speed_2_sd = sd(vcr_phys_vars$avg.ws, na.rm = T) * 2,
+             wind_speed_mean = mean(vcr_phys_vars$avg.ws, na.rm = T),
+             air_temp_mean = mean(vcr_phys_vars$avg.t, na.rm = T),
+             air_temp_2_sd = sd(vcr_phys_vars$avg.t, na.rm = T) * 2,
+             wat_temp_mean = mean(vcr_phys_vars$water_temperature, na.rm = T),
+             wat_temp_2_sd = sd(vcr_phys_vars$water_temperature, na.rm = T) * 2)
+
 vcr_phys_vars <- vcr_phys_vars[paste0(lubridate::year(Sys.Date()) - 1, "/", lubridate::year(Sys.Date()))]
 
 usethis::use_data(vcr_phys_vars, overwrite = T)
+usethis::use_data(extremes, overwrite = TRUE)

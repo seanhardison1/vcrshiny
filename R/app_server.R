@@ -1,21 +1,8 @@
-rtq <- function(){
-  rtq <- vcrshiny:::real_time_query()
-  if(length(rtq)!=0){
-    rtq <- rtq[, names(vcrshiny::vcr_phys_vars)]
-    # print(head(rtq))
-    df <- rbind(rtq, vcrshiny::vcr_phys_vars)
-  } else {
-    df <- vcrshiny::vcr_phys_vars
-    message("Using packaged data")
-  }
-  return(df)
-}
-
 app_server <- function(input, output, session, df, on = T) {
 
   # fill in data collected since last build
   if (on){
-    df <- rtq()
+    df <- vcrshiny:::rtq()
   } else {
     df <- vcrshiny::vcr_phys_vars
   }
@@ -35,26 +22,4 @@ app_server <- function(input, output, session, df, on = T) {
   callModule(mod_03_data_download_server,
                id = "03_data_download_ui_1",
                df_in = df_in)
-  
-  # execute module for reference lines
-  # callModule(mod_04_reference_lines_server,
-  #            id = "04_reference_lines_ui_1",
-  #            plot1vars = plot1vars,
-  #            df_in = df_in)
-  # 
-  # execute marsh vegetation variable selection module
-  # leafvars <- callModule(mod_04_veg_var_select_server, 
-  #                        "04_veg_var_select_ui_1")
-  
-  # execute leaflet module
-  # callModule(mod_03_veg_surv_server, 
-  #            "03_veg_surv_ui_1",
-  #            leafvars = leafvars)
-  
-  # plotting module for marsh vegetation
-  # callModule(mod_05_veg_plotting_server, 
-  #            "05_veg_plotting_ui_1",
-  #            leafvars = leafvars)
-  
-  
 }
