@@ -34,7 +34,7 @@ tides_new_df <-
     
     # select data from the Oyster station only
     dplyr::filter(stringr::str_detect(station, "OYST")) %>% 
-    dplyr::select(-station) %>% 
+    dplyr::select(-station,-barometric_pressure) %>% 
   
     # convert missing values to NA
     mutate_all(function(x)ifelse(x == ".", NA, x)) %>% 

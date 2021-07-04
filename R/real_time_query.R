@@ -22,10 +22,9 @@ real_time_query <- function(){
     # Process for use in package format
     tides_new_df <-
       infile1 %>% 
-      
       # select data from the Oyster station only
       dplyr::filter(stringr::str_detect(station, "OYST")) %>% 
-      dplyr::select(-station) %>% 
+      dplyr::select(-station,-barometric_pressure) %>% 
       
       # convert missing values to NA
       dplyr::mutate_all(function(x)ifelse(x == ".", NA, x)) %>% 
