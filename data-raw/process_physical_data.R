@@ -18,14 +18,14 @@ get_hourly_ltm <- F
 # Read in data from VCR database
 fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/tidedata/VCRTide.csv"
 # fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayTide.csv"
-infile1 <- readr::read_csv(fname, 
-                            col_names = c("station",
-                                         "date",
-                                         "time",
-                                         "relative_tide_level",
-                                         "water_temperature",
-                                         "barometric_pressure")) %>% 
-  dplyr::select(-barometric_pressure)
+infile1 <- data.table::fread(fname, col.names = c("station",
+                                                  "date",
+                                                  "time",
+                                                  "relative_tide_level",
+                                                  "water_temperature",
+                                                  "barometric_pressure"),
+                             quote = '"') %>% 
+  tibble::as_tibble() 
 
 
 # Process for use in package format
@@ -33,7 +33,7 @@ tides_new_df <-
   infile1 %>% 
     
     # select data from the Oyster station only
-    filter(station == "OYST") %>% 
+    dplyr::filter(stringr::str_detect(station, "OYST")) %>% 
     dplyr::select(-station) %>% 
   
     # convert missing values to NA
@@ -80,7 +80,7 @@ tides_new_xts <- xts(x = tides_new_df %>% dplyr::select(-datetime), order.by = t
 
 infile1  <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/whour_all_years.csv"
 # infile1 <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayWeather.csv"
-dt1 <-readr::read_csv(infile1, quote = '"', col_names = c(
+dt1 <-data.table::fread(fname, col.names = c(
   "STATION",
   "YEAR",
   "MONTH",
@@ -101,7 +101,7 @@ dt1 <-readr::read_csv(infile1, quote = '"', col_names = c(
   "SOIL.T" ))
 
 meteo_new_df <- dt1 %>% 
-  filter(STATION == "OYSM") %>% 
+  dplyr::filter(stringr::str_detect(STATION,"OYSM")) %>% 
   dplyr::select(-STATION) %>% 
   mutate_all(function(x)ifelse(x == ".", NA, x)) %>% 
   mutate_at(vars(PPT:SOIL.T), as.numeric) %>% 
