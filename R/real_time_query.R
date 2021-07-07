@@ -14,8 +14,8 @@ real_time_query <- function(){
                                                     "date",
                                                     "time",
                                                     "relative_tide_level",
-                                                    "water_temperature",
-                                                    "barometric_pressure")) %>% 
+                                                    "water_temperature"),
+                               select = c(1:5)) %>% 
     tibble::as_tibble() 
   
   if (nrow(infile1) != 0){
@@ -24,7 +24,7 @@ real_time_query <- function(){
       infile1 %>% 
       # select data from the Oyster station only
       dplyr::filter(stringr::str_detect(station, "OYST")) %>% 
-      dplyr::select(-station,-barometric_pressure) %>% 
+      dplyr::select(-station) %>% 
       
       # convert missing values to NA
       dplyr::mutate_all(function(x)ifelse(x == ".", NA, x)) %>% 

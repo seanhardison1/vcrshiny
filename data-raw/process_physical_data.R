@@ -12,9 +12,6 @@ library(tidyr)
 
 print(paste("Time of data pull is", Sys.time()))
 
-# trigger processing of long-term mean calculation
-get_hourly_ltm <- F
-
 # Read in data from VCR database
 fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/tidedata/VCRTide.csv"
 # fname <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayTide.csv"
@@ -22,11 +19,20 @@ infile1 <- data.table::fread(fname, col.names = c("station",
                                                   "date",
                                                   "time",
                                                   "relative_tide_level",
-                                                  "water_temperature",
-                                                  "barometric_pressure"),
-                             quote = '"') %>% 
-  tibble::as_tibble() 
+                                                  "water_temperature"),
+                             quote = '"',
+                             select = c(1:5)) %>% 
+  tibble::tibble() %>% 
+  mutate(time = as.numeric(time),
+         relative_tide_level = as.numeric(relative_tide_level))
 
+# infile2 <- readr::read_csv(fname, col_names = c("station",
+#                                      "date",
+#                                      "time",
+#                                      "relative_tide_level",
+#                                      "water_temperature",
+#                                      "barometric_pressure"),
+#                 quote = '"')
 
 # Process for use in package format
 tides_new_df <-
@@ -34,7 +40,7 @@ tides_new_df <-
     
     # select data from the Oyster station only
     dplyr::filter(stringr::str_detect(station, "OYST")) %>% 
-    dplyr::select(-station,-barometric_pressure) %>% 
+    dplyr::select(-station) %>% 
   
     # convert missing values to NA
     mutate_all(function(x)ifelse(x == ".", NA, x)) %>% 
@@ -52,7 +58,7 @@ tides_new_df <-
     dplyr::filter(!is.na(datetime)) %>%
   
     # Convert to tsibble to fill missing datetimes
-    filter(!duplicated(datetime)) %>% 
+    dplyr::filter(!duplicated(datetime)) %>% 
     tsibble(index = datetime) %>% 
     fill_gaps(.full  = TRUE) %>% 
     as_tibble() %>%
@@ -69,7 +75,7 @@ tides_new_df <-
     dplyr::mutate(datetime = lubridate::ymd_h(paste(y, m, d, h, sep = "-"), tz = "America/New_York")) %>%
     
     # select variables of interest
-    ungroup() %>% 
+    dplyr::ungroup() %>% 
     dplyr::select(datetime, relative_tide_level, water_temperature)
  
 # convert to xts for dygraphs
@@ -78,7 +84,7 @@ tides_new_xts <- xts(x = tides_new_df %>% dplyr::select(-datetime), order.by = t
 # Meteorology-----------------------------
 
 
-infile1  <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/whour_all_years.csv"
+fname  <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/whour_all_years.csv"
 # infile1 <- "http://www.vcrlter.virginia.edu/data/metdata/metgraphs/csv/hourly/todayWeather.csv"
 dt1 <-data.table::fread(fname, col.names = c(
   "STATION",
@@ -98,7 +104,8 @@ dt1 <-data.table::fread(fname, col.names = c(
   "STD.WANG",
   "RAD.SOL",
   "PAR",
-  "SOIL.T" ))
+  "SOIL.T" )) %>% 
+  tibble::as_tibble() 
 
 meteo_new_df <- dt1 %>% 
   dplyr::filter(stringr::str_detect(STATION,"OYSM")) %>% 
