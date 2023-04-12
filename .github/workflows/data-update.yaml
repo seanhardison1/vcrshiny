@@ -2,10 +2,10 @@ on:
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '0 */6 * * *'
-  push:
-    # tags: ['*.*']
-    branches:
-    - 'master'
+#  push:
+#    # tags: ['*.*']
+#    branches:
+#    - 'master'
 
 name: data-update
 
@@ -96,7 +96,7 @@ jobs:
         with:
           push: true
           no-cache: true
-          tags: ghcr.io/seanhardison1/vcrshiny:${{ env.IMAGE_TAG }}
+          tags: ghcr.io/seanhardison1/vcrshiny:latest
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
